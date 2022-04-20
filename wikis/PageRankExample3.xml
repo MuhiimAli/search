@@ -1,0 +1,7 @@
+<xml>
+    <page><title>A</title><id>1</id><text>[[A|F]]</text></page>
+    <page><title>B</title><id>2</id><text>[[B]]</text></page>
+    <page><title>C</title><id>3</id><text>[[D]]</text></page>
+    <page><title>D</title><id>4</id><text>[[C]]</text></page>
+</xml>
+<!--Expected: Rank(A) = 0.0524, Rank(B) = 0.0524, Rank(C) = 0.4476, Rank(D) = 0.4476-->
