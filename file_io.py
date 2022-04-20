@@ -39,7 +39,6 @@ def write_document_file(docs: str, ids_to_pageranks: dict):
 def write_words_file(words: str, words_to_doc_relevance: dict):
     """
     Writes the dictionary of words to ids to number of appearances
-
     output looks like:
     word1 id1_1 freq1_1 id1_2 freq1_2 ...
     word2 id2_1 freq2_1 id2_2 freq2_2 ...
@@ -111,3 +110,8 @@ def read_words_file(words: str, words_to_doc_relevance: dict):
                 if word not in words_to_doc_relevance:
                     words_to_doc_relevance[word] = {}
                 words_to_doc_relevance[word][page_id] = relevance
+
+
+x = input()
+x.Upper()
+
