@@ -7,7 +7,7 @@ nltk_test = PorterStemmer()
 nltk_test.stem("Stemming")
 import re
 class Indexer:
-    def __init__(self, xml_file):
+    def __init__(self, xml_file : str, title_file : str):
         #what are the fields
         """
         :param xml_file: the name of the input file that the indexer will read in and parse
@@ -16,7 +16,7 @@ class Indexer:
         :param worsds_file: stores the relevance of documents to words
         """
         self.xml_file = xml_file
-        # self.title_file = title_file
+        self.title_file = title_file
         # self.docs_file = docs_file
         # self.words_file = words_file
         self.tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
@@ -25,8 +25,10 @@ class Indexer:
         wiki_tree = et.parse(self.xml_file) #loads the xml file into a tree
         root = wiki_tree.getroot()#get the root of the tree
         self.all_pages = root.findall('page')#this gets all the pages
-        self.parse()
         self.file_io = file_io
+        self.parse()
+        self.ids_to_titles()
+        
         
     def parse(self):
         for page in self.all_pages:#looping through all the pages
@@ -35,39 +37,40 @@ class Indexer:
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    sliced_links= handle_Links(term)
+                    sliced_links= self.handle_Links(term)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
-                        remove_stop_words_and_stem(self, word)
+                        self.remove_stop_words_and_stem(word)
                 else: #if the word is not a link
-                   remove_stop_words_and_stem(self, term)
-        print(self.word_corpus)
+                   self.remove_stop_words_and_stem(term)
+        #print(self.word_corpus)
+
+    def handle_Links(self, term : str):
+        if "|" in term:
+            sliced = term[2:-2]
+            no_bar = sliced.split("|")
+            return no_bar[1]
+        else:
+            sliced = term[2:-2]
+            return sliced
+
+    def remove_stop_words_and_stem(self, term: str):
+        if term not in STOP_WORDS:
+            processed_word =nltk_test.stem(term)
+            self.word_corpus.add(processed_word)
+
+    def ids_to_titles(self):
+        ids_to_titles_dict = {}
+        for page in self.all_pages:
+            title = str = (page.find('title').text).strip()
+            id: int = int(page.find('id').text)
+            ids_to_titles_dict[id] = title
+            self.file_io.write_title_file(self.title_file, ids_to_titles_dict)
+        print(ids_to_titles_dict)
+        
+    
 
 
 
-
-    # def ids_to_titles(self):
-    #     ids_to_titles = {}
-    #     for page in self.all_pages:
-    #         title = str = page.find('title').text
-    #         id: int = int(page.find('id').text)
-    #         ids_to_titles[id] = title
-    #         self.file_io.write_title_file(self.title_file, ids_to_titles)
-    # def 
-def handle_Links(term : str):
-    if "|" in term:
-        sliced = term[2:-2]
-        no_bar = sliced.split("|")
-        return no_bar[1]
-    else:
-        sliced = term[2:-2]
-        return sliced
-def remove_stop_words_and_stem(self, term: str):
-    if term not in STOP_WORDS:
-        processed_word =nltk_test.stem(term)
-        self.word_corpus.add(processed_word)
-
-
-
-vl = Indexer('our_wiki_files/test_parsing.xml')
+vl = Indexer('our_wiki_files/parsing.xml','output_files/titles')
 
