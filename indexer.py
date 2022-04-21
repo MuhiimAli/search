@@ -1,5 +1,6 @@
 import xml.etree.ElementTree as et
 import file_io
+import nltk
 from nltk.corpus import stopwords
 STOP_WORDS = set(stopwords.words('english'))
 from nltk.stem import PorterStemmer
@@ -42,13 +43,15 @@ class Indexer:
                     sliced_links= self.handle_Links(term)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
-                        word_stem= self.remove_stop_words_and_stem(word)
-                        if word_stem != None:
-                            if word_stem not in self.docs_to_words_to_counts:
-                                self.docs_to_words_to_counts[word_stem] = {}
-                            if id not in self.docs_to_words_to_counts[word_stem]:
-                                self.docs_to_words_to_counts[word_stem][id] = 0
-                            self.docs_to_words_to_counts[word_stem][id]+=1
+                        word_stem = self.remove_stop_words_and_stem(word)
+                else: #if the word is not a link
+                    word_stem= self.remove_stop_words_and_stem(term)
+                if word_stem != None:
+                        if word_stem not in self.docs_to_words_to_counts:
+                            self.docs_to_words_to_counts[word_stem] = {}
+                        if id not in self.docs_to_words_to_counts[word_stem]:
+                            self.docs_to_words_to_counts[word_stem][id] = 0
+                        self.docs_to_words_to_counts[word_stem][id]+=1
 
 
                         # if page not in self.docs_to_words_to_counts[word_stem]:
@@ -58,10 +61,7 @@ class Indexer:
                             # inner_dict[page]
                         #self.word_corpus.add(word_stem)
                         
-                else: #if the word is not a link
-                   word_stem= self.remove_stop_words_and_stem(term)
-                   if word_stem != None:
-                       self.docs_to_words_to_counts[word_stem] = {}
+                
            
 
                # print(term)
@@ -105,5 +105,5 @@ class Indexer:
 
 
 
-var = Indexer('wikis/test1_tf_idf.xml','indexer_output_files/titles')
+var = Indexer('wikis/test_tf_idf.xml','indexer_output_files/titles')
 
