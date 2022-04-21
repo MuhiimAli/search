@@ -29,10 +29,12 @@ class Indexer:
         self.parse()
         self.ids_to_titles()
         
-        
+    docs_to_words_to_counts = {}  
     def parse(self):
+        count = 0
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
+            id: int = int(page.find('id').text)
             page_tokens = re.findall(self.tokenization_regex,text)
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
@@ -40,10 +42,33 @@ class Indexer:
                     sliced_links= self.handle_Links(term)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
-                        self.remove_stop_words_and_stem(word)
+                        word_stem= self.remove_stop_words_and_stem(word)
+                        if word_stem != None:
+                            if word_stem not in self.docs_to_words_to_counts:
+                                self.docs_to_words_to_counts[word_stem] = {}
+                            if id not in self.docs_to_words_to_counts[word_stem]:
+                                self.docs_to_words_to_counts[word_stem][id] = 0
+                            self.docs_to_words_to_counts[word_stem][id]+=1
+
+
+                        # if page not in self.docs_to_words_to_counts[word_stem]:
+                        #     self.docs_to_words_to_counts[word_stem][page] = 0
+                        
+                            # inner_dict = self.docs_to_words_to_counts[word_stem]
+                            # inner_dict[page]
+                        #self.word_corpus.add(word_stem)
+                        
                 else: #if the word is not a link
-                   self.remove_stop_words_and_stem(term)
+                   word_stem= self.remove_stop_words_and_stem(term)
+                   if word_stem != None:
+                       self.docs_to_words_to_counts[word_stem] = {}
+           
+
+               # print(term)
+                
         #print(self.word_corpus)
+        print(self.docs_to_words_to_counts)
+        """ treat linked text as words as well so that we can stem the linked test/remove stop/update maps """
 
     def handle_Links(self, term : str):
         if "|" in term:
@@ -58,6 +83,12 @@ class Indexer:
         if term not in STOP_WORDS:
             processed_word =nltk_test.stem(term)
             self.word_corpus.add(processed_word)
+            return processed_word
+            #print(processed_word)
+            # if processed_word != None:
+
+            # return processed_word
+           # 
 
     def ids_to_titles(self):
         ids_to_titles_dict = {}
@@ -74,5 +105,5 @@ class Indexer:
 
 
 
-var = Indexer('our_wiki_files/parsing.xml','indexer_output_files/titles')
+var = Indexer('wikis/test1_tf_idf.xml','indexer_output_files/titles')
 
