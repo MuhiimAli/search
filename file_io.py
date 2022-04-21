@@ -112,6 +112,3 @@ def read_words_file(words: str, words_to_doc_relevance: dict):
                 words_to_doc_relevance[word][page_id] = relevance
 
 
-x = input()
-x.Upper()
-

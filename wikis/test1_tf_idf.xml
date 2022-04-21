@@ -1,38 +1,35 @@
 <xml>
   <page>
     <title>
-      A
+      Page 1
     </title>
     <id>
       1
     </id>
     <text>
-      Process an XML document into a list of terms
-      [[B]] [[C]]
+      the dog bit the man
     </text>
   </page>
   <page>
     <title>
-    B
+	  Page 2
 	</title>
 	<id>
 	  2
 	</id>
 	<text>
-      Determine the relevance between terms and documents
-      [[C]]
+      the dog ate cheese
 	</text>
   </page>
   <page>
     <title>
-	  C
+	  Page 3
 	</title>
 	<id>
 	  3
 	</id>
 	<text>
-    Determine the authority of each document.
-    [[A]]
+      the cheese bit the cheese
 	</text>
   </page>
-   
+</xml>
