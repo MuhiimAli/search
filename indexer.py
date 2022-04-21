@@ -32,21 +32,20 @@ class Indexer:
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
             page_tokens = re.findall(self.tokenization_regex,text)
-            print(page_tokens[0])
             links = re.findall(self.link_regex, text)
-            for word in page_tokens: #looping through a list of words
-                if word in links:#if the word is link
-                    sliced_links= handle_Links(links)
-                    sliced_links_token = re.findall(self.tokenization_regex, sliced_links)
+            for term in page_tokens: #looping through a list of words
+                if term in links:#if the word is link
+                    sliced_links= handle_Links(term)
+                    sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
-                        if word not in STOP_WORDS:
-                            stemmed =nltk_test.stem(word)
-                            self.word_corpus.add(stemmed)
-                else:
-                    if word not in STOP_WORDS:
-                        stem =nltk_test.stem(word)
-                        self.word_corpus.add(stem)
+                        remove_stop_words_and_stem(self, word)
+                else: #if the word is not a link
+                   remove_stop_words_and_stem(self, term)
         print(self.word_corpus)
+
+
+
+
     # def ids_to_titles(self):
     #     ids_to_titles = {}
     #     for page in self.all_pages:
@@ -55,20 +54,20 @@ class Indexer:
     #         ids_to_titles[id] = title
     #         self.file_io.write_title_file(self.title_file, ids_to_titles)
     # def 
-def handle_Links(links : list):
-    for text in links:
-        if "|" in text:
-            sliced = text[2:-2]
-            no_bar = sliced.split("|")
-            return no_bar[1]
-        else:
-            sliced = text[2:-2]
-            return sliced
-           # link_list.append(sliced)
-    #return link_list
+def handle_Links(term : str):
+    if "|" in term:
+        sliced = term[2:-2]
+        no_bar = sliced.split("|")
+        return no_bar[1]
+    else:
+        sliced = term[2:-2]
+        return sliced
+def remove_stop_words_and_stem(self, term: str):
+    if term not in STOP_WORDS:
+        processed_word =nltk_test.stem(term)
+        self.word_corpus.add(processed_word)
 
-  
 
 
-vl = Indexer('our_wiki_files/test_tf_idf.xml')
+vl = Indexer('our_wiki_files/test_parsing.xml')
 
