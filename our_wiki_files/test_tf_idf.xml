@@ -8,7 +8,7 @@
     </id>
     <text>
       Process an XML document into a list of terms
-      [[B]] [[C]]
+      [[the dog ate cheese]]
     </text>
   </page>
   <page>
@@ -20,7 +20,7 @@
 	</id>
 	<text>
       Determine the relevance between terms and documents
-      [[C]]
+      [[C|Bitch]]
 	</text>
   </page>
   <page>
@@ -32,7 +32,7 @@
 	</id>
 	<text>
     Determine the authority of each document.
-    [[A]]
+    [[Category: mashallah science]]
 	</text>
   </page>
 </xml>
