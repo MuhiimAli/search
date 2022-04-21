@@ -6,9 +6,6 @@
     <id>
       1
     </id>
-    <id>
-     2
-    </id>
     <text>
      signing a contract creates a contractual obligation
     [[the dog ate cheese]]
@@ -30,9 +27,6 @@
     <title>
 	  cs200
 	</title>
-	<id>
-	  200
-	</id>
     <id>
 	  20
 	</id>
@@ -47,9 +41,6 @@
 	</title>
 	<id>
 	  200
-	</id>
-    <id>
-	  20
 	</id>
 	<text>
         water is cold
