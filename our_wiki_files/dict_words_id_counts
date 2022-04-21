@@ -7,7 +7,7 @@
       1
     </id>
     <id>
-    2
+     2
     </id>
     <text>
      signing a contract creates a contractual obligation
@@ -39,6 +39,21 @@
 	<text>
         water signs are more likely to get cold
         [[Category: mashallah science]]
+	</text>
+  </page>
+   <page>
+    <title>
+	  cs200
+	</title>
+	<id>
+	  200
+	</id>
+    <id>
+	  20
+	</id>
+	<text>
+        water is cold
+        [[science is cool]]
 	</text>
   </page>
 </xml>
