@@ -67,10 +67,12 @@ class Indexer:
             ids_to_titles_dict[id] = title
             self.file_io.write_title_file(self.title_file, ids_to_titles_dict)
         print(ids_to_titles_dict)
+    def term_frequency():
+        pass
         
     
 
 
 
-vl = Indexer('our_wiki_files/parsing.xml','output_files/titles')
+var = Indexer('our_wiki_files/parsing.xml','indexer_output_files/titles')
 

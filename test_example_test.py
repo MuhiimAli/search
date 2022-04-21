@@ -1,5 +1,5 @@
 import pytest
-from indexer import Indexer
+from index import Indexer
 
 def test_parse():
     vl = Indexer('wikis/test1_tf_idf.xml')
