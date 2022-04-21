@@ -43,12 +43,12 @@ class Indexer:
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
                         word_stem= self.remove_stop_words_and_stem(word)
-                        if word_stem != None:
-                            if word_stem not in self.docs_to_words_to_counts:
-                                self.docs_to_words_to_counts[word_stem] = {}
-                            if id not in self.docs_to_words_to_counts[word_stem]:
-                                self.docs_to_words_to_counts[word_stem][id] = 0
-                            self.docs_to_words_to_counts[word_stem][id]+=1
+                        # if word_stem != None:
+                        #     if word_stem not in self.docs_to_words_to_counts:
+                        #         self.docs_to_words_to_counts[word_stem] = {}
+                        #     if id not in self.docs_to_words_to_counts[word_stem]:
+                        #         self.docs_to_words_to_counts[word_stem][id] = 0
+                        #     self.docs_to_words_to_counts[word_stem][id]+=1
 
 
                         # if page not in self.docs_to_words_to_counts[word_stem]:
