@@ -1,7 +1,6 @@
 import math
 from os import nice
 import xml.etree.ElementTree as et
-
 from sympy import numbered_symbols
 import file_io
 import nltk
@@ -117,5 +116,5 @@ class Indexer:
 
 
 
-var = Indexer('our_wiki_files/dict_words_id_counts','indexer_output_files/titles')
+var = Indexer('our_wiki_files/dict_words_id_counts.xml','indexer_output_files/titles')
 
