@@ -30,7 +30,8 @@ class Indexer:
         self.parse()
         self.ids_to_titles()
         
-    docs_to_words_to_counts = {}  
+    docs_to_words_to_counts = {} 
+    id_to_highest_freq = {} 
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
@@ -86,6 +87,7 @@ class Indexer:
 
     def term_frequency():
         pass
+    
     
 
 
