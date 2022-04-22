@@ -7,8 +7,8 @@
       1
     </id>
     <text>
-     signing a contract creates a contractual obligation
-    [[the dog ate cheese]]
+      Process an XML document into a documents of philosophy
+      [[A]] [[science]]
     </text>
   </page>
   <page>
@@ -19,31 +19,20 @@
 	  2
 	</id>
 	<text>
-    contract a cold or contract the flu
-    [[A]] [[B|Jen]]
+      Determine the relevance between science and philosophy
+      [[C|gorgeous]] [[Determination]]
 	</text>
   </page>
   <page>
     <title>
 	  cs200
 	</title>
-    <id>
+	<id>
 	  3
 	</id>
 	<text>
-        water signs are more likely to get cold
-        [[A:B]]
-	</text>
-  </page>
-   <page>
-    <title>
-	  cs200
-	</title>
-	<id>
-	  4
-	</id>
-	<text>
-        water is cold
+    Determine the authority of each science document
+    [[Category: authority]] 
 	</text>
   </page>
 </xml>

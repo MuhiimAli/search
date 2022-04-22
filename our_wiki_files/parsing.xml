@@ -7,8 +7,8 @@
       1
     </id>
     <text>
-      Process an XML document into a list of terms
-      [[the dog ate cheese]]
+      Process an XML's DOCUMENT into a list of terms
+      [[ate cheese]]
     </text>
   </page>
   <page>
@@ -20,7 +20,7 @@
 	</id>
 	<text>
       Determine the relevance between terms and documents
-      [[C|gorgeous]] [[another human]] [[morning|Jen]]
+      [[C|gorgeous]] [[Jen's cat and Jen]]
 	</text>
   </page>
   <page>
@@ -31,7 +31,7 @@
 	  200
 	</id>
 	<text>
-    Determine the authority of each document.
+    Determine the king's AUTHORITY and the king.
     [[Category: science]]
 	</text>
   </page>

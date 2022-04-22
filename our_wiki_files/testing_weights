@@ -1,0 +1,18 @@
+<xml>
+    <page>
+        <title>PageA</title>
+        <id>1</id>
+        <text>[[PageB]] [[PageC]]</text>
+    </page>
+    <page>
+        <title>PageB</title>
+        <id>2</id>
+        <text> </text>
+    </page>
+    <page>
+        <title>PageC</title>
+        <id>3</id>
+        <text>[[PageA|F]]</text>
+    </page>
+</xml>
+       

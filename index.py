@@ -1,18 +1,18 @@
 import math
 from os import nice
 import xml.etree.ElementTree as et
-# from sympy import numbered_symbols
+#from sympy import numbered_symbols
 import file_io
-import nltk
 from nltk.corpus import stopwords
 STOP_WORDS = set(stopwords.words('english'))
 from nltk.stem import PorterStemmer
 nltk_test = PorterStemmer()
 nltk_test.stem("Stemming")
 import re
-class Indexer:
+import sys
+
+class Index:
     def __init__(self, xml_file : str, title_file : str, words_file: str):
-        #what are the fields
         """
         :param xml_file: the name of the input file that the indexer will read in and parse
         :param title_file: maps document IDs to document titles
@@ -40,17 +40,25 @@ class Indexer:
         self.write_words_file()
         
     docs_to_words_to_counts = {} 
-    id_to_highest_freq = {} 
+    page_to_page_links = {}
+    id_to_highest_freq = {}
+    links_set = set ()
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
+            page_title: str = page.find('title').text #getting the title of each page. 
             id: int = int(page.find('id').text)
-            page_tokens = re.findall(self.tokenization_regex,text)
+            page_tokens = re.findall(self.tokenization_regex,page_title + ' '+ text)
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    sliced_links= self.handle_Links(term)
-                    sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
+                    # sliced_page_links = self.handle_Links(term,True)
+                    # if id not in self.page_to_page_links:
+                    #     self.page_to_page_links[id] = {}
+                    #     self.links_set.add(sliced_page_links)
+                    #     self.page_to_page_links[id] = self.links_set
+                    sliced_text_links= self.handle_Links(term, False)
+                    sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
                         word_stem = self.remove_stop_words_and_stem(word)
                         self.populate_word_to_ids_counts_dict(word_stem, id)
@@ -59,16 +67,25 @@ class Indexer:
                     self.populate_word_to_ids_counts_dict(word_stem, id)
                # print(term)
                 
-       # print(self.word_corpus)
+        #print(self.word_corpus)
+        print(self.page_to_page_links)
 
         #print(self.docs_to_words_to_counts)
         #print(self.id_to_highest_freq)
+    def page_page_links(self, id :int, sliced_page_links : str):
+        if id not in self.page_to_page_links:
+            self.page_to_page_links[id] = {}
+            self.links_set.add(sliced_page_links)
+            self.page_to_page_links[id] = self.links_set
 
-    def handle_Links(self, term : str):
+    def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
             sliced = term[2:-2]
             no_bar = sliced.split("|")
-            return no_bar[1]
+            if page_link == True:
+                return no_bar[0]
+            else:
+                return no_bar[1]
         else:
             sliced = term[2:-2]
             return sliced
@@ -94,8 +111,6 @@ class Indexer:
                 self.docs_to_words_to_counts[word_stem][id] = 0
             self.docs_to_words_to_counts[word_stem][id]+=1
 
-
-   
     id_to_highest_freq = {}
     def populate_id_to_most_freq_count(self):
         words= self.docs_to_words_to_counts.keys()
@@ -127,6 +142,7 @@ class Indexer:
         for word in words:
             n_i = self.term_to_num_of_docs[word]
             self.idf_dict[word] = math.log(n/n_i)
+        #print(self.idf_dict)
 
     tf_dict= {}
     def compute_term_frequency(self):
@@ -139,7 +155,6 @@ class Indexer:
                 if id not in self.tf_dict[word]:
                     self.tf_dict[word][id]= 0
                 term_frequency = self.docs_to_words_to_counts[word][id]
-        
                 self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
         #print(self.tf_dict)
     
@@ -155,21 +170,17 @@ class Indexer:
                     self.words_to_doc_relevance[word][id] = 0
                 self.words_to_doc_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
             #print(self.idf_dict[word])
-        print(self.words_to_doc_relevance)
+       # print(self.words_to_doc_relevance)
 
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_doc_relevance)
 
+    
+# if __name__ == "__main__":
+#     var = Index(sys.argv[1],sys.argv[2],sys.argv[3])
+#     pass
+
         
 
-
-
-            
-
-
-
-
-
-
-
-var = Indexer('our_wiki_files/dict_words_id_counts.xml','indexer_output_files/titles', 'indexer_output_files/words')
+var = Index('our_wiki_files/testing_weights','indexer_output_files/titles', 'indexer_output_files/words')
+    
