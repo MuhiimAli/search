@@ -20,7 +20,7 @@
 	</id>
 	<text>
     contract a cold or contract the flu
-    [[C|gorgeous]] [[another human]] [[morning|Jen]]
+    [[A]] [[B|Jen]]
 	</text>
   </page>
   <page>
@@ -28,11 +28,11 @@
 	  cs200
 	</title>
     <id>
-	  20
+	  3
 	</id>
 	<text>
         water signs are more likely to get cold
-        [[Category: mashallah science]]
+        [[A:B]]
 	</text>
   </page>
    <page>
@@ -40,11 +40,10 @@
 	  cs200
 	</title>
 	<id>
-	  200
+	  4
 	</id>
 	<text>
         water is cold
-        [[science is cool]]
 	</text>
   </page>
 </xml>
