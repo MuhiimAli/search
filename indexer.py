@@ -172,4 +172,4 @@ class Indexer:
 
 
 
-var = Indexer('our_wiki_files/test_word_relevance.xml','indexer_output_files/titles', 'indexer_output_files/words')
+var = Indexer('our_wiki_files/dict_words_id_counts.xml','indexer_output_files/titles', 'indexer_output_files/words')
