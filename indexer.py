@@ -1,12 +1,7 @@
 import math
 from os import nice
 import xml.etree.ElementTree as et
-<<<<<<< HEAD
-from sympy import numbered_symbols
-=======
-
 # from sympy import numbered_symbols
->>>>>>> eee54408d30ff0cc1f18f6a0c42b15b7185a17e9
 import file_io
 import nltk
 from nltk.corpus import stopwords
@@ -16,7 +11,7 @@ nltk_test = PorterStemmer()
 nltk_test.stem("Stemming")
 import re
 class Indexer:
-    def __init__(self, xml_file : str, title_file : str):
+    def __init__(self, xml_file : str, title_file : str, words_file: str):
         #what are the fields
         """
         :param xml_file: the name of the input file that the indexer will read in and parse
@@ -27,7 +22,7 @@ class Indexer:
         self.xml_file = xml_file
         self.title_file = title_file
         # self.docs_file = docs_file
-        # self.words_file = words_file
+        self.words_file = words_file
         self.tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
         self.link_regex = '''\[\[[^\[]+?\]\]'''
         self.word_corpus = set()
@@ -39,6 +34,10 @@ class Indexer:
         self.ids_to_titles()
         self.compute_n_i()
         self.compute_idf()
+        self.populate_id_to_most_freq_count()
+        self.compute_term_frequency()
+        self.compute_term_relevance()
+        self.write_words_file()
         
     docs_to_words_to_counts = {} 
     id_to_highest_freq = {} 
@@ -55,17 +54,15 @@ class Indexer:
                     for word in sliced_links_token:
                         word_stem = self.remove_stop_words_and_stem(word)
                         self.populate_word_to_ids_counts_dict(word_stem, id)
-                        self.populate_id_to_most_freq_count(word_stem, id)
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_counts_dict(word_stem, id)
-                    self.populate_id_to_most_freq_count(word_stem, id)
                # print(term)
                 
-        #print(self.word_corpus)
+       # print(self.word_corpus)
 
         #print(self.docs_to_words_to_counts)
-        print(self.id_to_highest_freq)
+        #print(self.id_to_highest_freq)
 
     def handle_Links(self, term : str):
         if "|" in term:
@@ -98,57 +95,81 @@ class Indexer:
             self.docs_to_words_to_counts[word_stem][id]+=1
 
 
-    def term_frequency():
-        pass
+   
+    id_to_highest_freq = {}
+    def populate_id_to_most_freq_count(self):
+        words= self.docs_to_words_to_counts.keys()
+        for word in words:
+            ids= self.docs_to_words_to_counts[word].keys()
+            for id in ids:
+                if id not in self.id_to_highest_freq:
+                    self.id_to_highest_freq[id] = 0
+                self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
+                    self.docs_to_words_to_counts[word][id])
+        #print(self.id_to_highest_freq)
+        
     word_idf = {}
-    number_of_times_word_appears= {}
-
+    term_to_num_of_docs= {}
     def compute_n_i(self):
         words=  self.docs_to_words_to_counts.keys()
         for word in words:
             id_list = self.docs_to_words_to_counts[word].keys() #getting the id associated with each word
             for id in id_list:
-                if word not in self.number_of_times_word_appears:
-                    self.number_of_times_word_appears[word] = 0
-                self.number_of_times_word_appears[word]+=1
+                if word not in self.term_to_num_of_docs:
+                    self.term_to_num_of_docs[word] = 0
+                self.term_to_num_of_docs[word]+=1
+        #print(self.term_to_num_of_docs)
             
     idf_dict = {}
     def compute_idf(self):
         n = len(self.all_pages)
         words= self.docs_to_words_to_counts.keys()#all the words in the corpus
         for word in words:
-            n_i = self.number_of_times_word_appears[word]
+            n_i = self.term_to_num_of_docs[word]
             self.idf_dict[word] = math.log(n/n_i)
-        print(self.idf_dict)
 
-
-    def populate_id_to_most_freq_count(self, word_stem: str, id: int):
-        if word_stem != None:
-            if id not in self.id_to_highest_freq:
-                self.id_to_highest_freq[id] = 0
-            self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id], self.docs_to_words_to_counts[word_stem][id])
-
-        # for page in self.all_pages:#looping through all the pages
-        #     id: int = int(page.find('id').text)
-        #     for x in self.docs_to_words_to_counts:
-        #         for y in self.docs_to_words_to_counts[x]:
-        #             if self.docs_to_words_to_counts[x] not in self.id_to_highest_freq:
-        #                 self.id_to_highest_freq[y] = 0
-                    
-        """
-        2 ways to do this 
-
-        1. 
-        looping thru the dict, each word, u know which word ur on and which page id 
-        2. 
-        """        
-            
+    tf_dict= {}
+    def compute_term_frequency(self):
+        words= self.docs_to_words_to_counts.keys()
+        for word in words:
+            ids = self.docs_to_words_to_counts[word].keys()
+            if  word not in self.tf_dict:
+                self.tf_dict[word]= {}
+            for id in ids:
+                if id not in self.tf_dict[word]:
+                    self.tf_dict[word][id]= 0
+                term_frequency = self.docs_to_words_to_counts[word][id]
         
-            # for x in self.docs_to_words_to_counts[page]:
-            #     highestcount = self.docs_to_words_to_counts[page][]
-            #     pass
+                self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
+        #print(self.tf_dict)
+    
+    words_to_doc_relevance= {}
+    def compute_term_relevance(self):
+        words=self.docs_to_words_to_counts.keys()
+        for word in words:
+            ids = self.docs_to_words_to_counts[word].keys()
+            if word not in self.words_to_doc_relevance:
+                self.words_to_doc_relevance[word] = {}
+            for id in ids:
+                if id not in self.words_to_doc_relevance[word]:
+                    self.words_to_doc_relevance[word][id] = 0
+                self.words_to_doc_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
+            #print(self.idf_dict[word])
+        print(self.words_to_doc_relevance)
+
+    def write_words_file(self):
+        self.file_io.write_words_file(self.words_file, self.words_to_doc_relevance)
+
+        
 
 
 
-var = Indexer('wikis/test_tf_idf.xml','indexer_output_files/titles')
+            
 
+
+
+
+
+
+
+var = Indexer('our_wiki_files/test_word_relevance.xml','indexer_output_files/titles', 'indexer_output_files/words')
