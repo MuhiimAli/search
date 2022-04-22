@@ -1,7 +1,12 @@
 import math
 from os import nice
 import xml.etree.ElementTree as et
+<<<<<<< HEAD
 from sympy import numbered_symbols
+=======
+
+# from sympy import numbered_symbols
+>>>>>>> eee54408d30ff0cc1f18f6a0c42b15b7185a17e9
 import file_io
 import nltk
 from nltk.corpus import stopwords
@@ -35,7 +40,8 @@ class Indexer:
         self.compute_n_i()
         self.compute_idf()
         
-    docs_to_words_to_counts = {}  
+    docs_to_words_to_counts = {} 
+    id_to_highest_freq = {} 
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
@@ -49,14 +55,17 @@ class Indexer:
                     for word in sliced_links_token:
                         word_stem = self.remove_stop_words_and_stem(word)
                         self.populate_word_to_ids_counts_dict(word_stem, id)
+                        self.populate_id_to_most_freq_count(word_stem, id)
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_counts_dict(word_stem, id)
+                    self.populate_id_to_most_freq_count(word_stem, id)
                # print(term)
                 
         #print(self.word_corpus)
 
         #print(self.docs_to_words_to_counts)
+        print(self.id_to_highest_freq)
 
     def handle_Links(self, term : str):
         if "|" in term:
@@ -113,8 +122,33 @@ class Indexer:
         print(self.idf_dict)
 
 
+    def populate_id_to_most_freq_count(self, word_stem: str, id: int):
+        if word_stem != None:
+            if id not in self.id_to_highest_freq:
+                self.id_to_highest_freq[id] = 0
+            self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id], self.docs_to_words_to_counts[word_stem][id])
+
+        # for page in self.all_pages:#looping through all the pages
+        #     id: int = int(page.find('id').text)
+        #     for x in self.docs_to_words_to_counts:
+        #         for y in self.docs_to_words_to_counts[x]:
+        #             if self.docs_to_words_to_counts[x] not in self.id_to_highest_freq:
+        #                 self.id_to_highest_freq[y] = 0
+                    
+        """
+        2 ways to do this 
+
+        1. 
+        looping thru the dict, each word, u know which word ur on and which page id 
+        2. 
+        """        
+            
+        
+            # for x in self.docs_to_words_to_counts[page]:
+            #     highestcount = self.docs_to_words_to_counts[page][]
+            #     pass
 
 
 
-var = Indexer('our_wiki_files/dict_words_id_counts.xml','indexer_output_files/titles')
+var = Indexer('wikis/test_tf_idf.xml','indexer_output_files/titles')
 
