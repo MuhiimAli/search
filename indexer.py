@@ -1,4 +1,8 @@
+import math
+from os import nice
 import xml.etree.ElementTree as et
+
+from sympy import numbered_symbols
 import file_io
 import nltk
 from nltk.corpus import stopwords
@@ -29,6 +33,8 @@ class Indexer:
         self.file_io = file_io
         self.parse()
         self.ids_to_titles()
+        self.compute_n_i()
+        self.compute_idf()
         
     docs_to_words_to_counts = {}  
     def parse(self):
@@ -51,7 +57,7 @@ class Indexer:
                 
         #print(self.word_corpus)
 
-        print(self.docs_to_words_to_counts)
+        #print(self.docs_to_words_to_counts)
 
     def handle_Links(self, term : str):
         if "|" in term:
@@ -86,8 +92,28 @@ class Indexer:
 
     def term_frequency():
         pass
-        
-    
+    word_idf = {}
+    number_of_times_word_appears= {}
+
+    def compute_n_i(self):
+        words=  self.docs_to_words_to_counts.keys()
+        for word in words:
+            id_list = self.docs_to_words_to_counts[word].keys() #getting the id associated with each word
+            for id in id_list:
+                if word not in self.number_of_times_word_appears:
+                    self.number_of_times_word_appears[word] = 0
+                self.number_of_times_word_appears[word]+=1
+            
+    idf_dict = {}
+    def compute_idf(self):
+        n = len(self.all_pages)
+        words= self.docs_to_words_to_counts.keys()#all the words in the corpus
+        for word in words:
+            n_i = self.number_of_times_word_appears[word]
+            self.idf_dict[word] = math.log(n/n_i)
+        print(self.idf_dict)
+
+
 
 
 
