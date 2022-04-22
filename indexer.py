@@ -1,4 +1,8 @@
+import math
+from os import nice
 import xml.etree.ElementTree as et
+
+# from sympy import numbered_symbols
 import file_io
 import nltk
 from nltk.corpus import stopwords
@@ -29,6 +33,8 @@ class Indexer:
         self.file_io = file_io
         self.parse()
         self.ids_to_titles()
+        self.compute_n_i()
+        self.compute_idf()
         
     docs_to_words_to_counts = {} 
     id_to_highest_freq = {} 
@@ -45,14 +51,17 @@ class Indexer:
                     for word in sliced_links_token:
                         word_stem = self.remove_stop_words_and_stem(word)
                         self.populate_word_to_ids_counts_dict(word_stem, id)
+                        self.populate_id_to_most_freq_count(word_stem, id)
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_counts_dict(word_stem, id)
+                    self.populate_id_to_most_freq_count(word_stem, id)
                # print(term)
                 
         #print(self.word_corpus)
 
-        print(self.docs_to_words_to_counts)
+        #print(self.docs_to_words_to_counts)
+        print(self.id_to_highest_freq)
 
     def handle_Links(self, term : str):
         if "|" in term:
@@ -87,10 +96,54 @@ class Indexer:
 
     def term_frequency():
         pass
-    
-    
+    word_idf = {}
+    number_of_times_word_appears= {}
+
+    def compute_n_i(self):
+        words=  self.docs_to_words_to_counts.keys()
+        for word in words:
+            id_list = self.docs_to_words_to_counts[word].keys() #getting the id associated with each word
+            for id in id_list:
+                if word not in self.number_of_times_word_appears:
+                    self.number_of_times_word_appears[word] = 0
+                self.number_of_times_word_appears[word]+=1
+            
+    idf_dict = {}
+    def compute_idf(self):
+        n = len(self.all_pages)
+        words= self.docs_to_words_to_counts.keys()#all the words in the corpus
+        for word in words:
+            n_i = self.number_of_times_word_appears[word]
+            self.idf_dict[word] = math.log(n/n_i)
+        print(self.idf_dict)
 
 
+    def populate_id_to_most_freq_count(self, word_stem: str, id: int):
+        if word_stem != None:
+            if id not in self.id_to_highest_freq:
+                self.id_to_highest_freq[id] = 0
+            self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id], self.docs_to_words_to_counts[word_stem][id])
 
-var = Indexer('our_wiki_files/dict_words_id_counts','indexer_output_files/titles')
+        # for page in self.all_pages:#looping through all the pages
+        #     id: int = int(page.find('id').text)
+        #     for x in self.docs_to_words_to_counts:
+        #         for y in self.docs_to_words_to_counts[x]:
+        #             if self.docs_to_words_to_counts[x] not in self.id_to_highest_freq:
+        #                 self.id_to_highest_freq[y] = 0
+                    
+        """
+        2 ways to do this 
+
+        1. 
+        looping thru the dict, each word, u know which word ur on and which page id 
+        2. 
+        """        
+            
+        
+            # for x in self.docs_to_words_to_counts[page]:
+            #     highestcount = self.docs_to_words_to_counts[page][]
+            #     pass
+
+
+var = Indexer('wikis/test_tf_idf.xml','indexer_output_files/titles')
 
