@@ -43,7 +43,6 @@ class Indexer:
                     sliced_links= self.handle_Links(term)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_links)#tokenizes link texts
                     for word in sliced_links_token:
-
                         word_stem = self.remove_stop_words_and_stem(word)
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
@@ -53,21 +52,6 @@ class Indexer:
                         if id not in self.docs_to_words_to_counts[word_stem]:
                             self.docs_to_words_to_counts[word_stem][id] = 0
                         self.docs_to_words_to_counts[word_stem][id]+=1
-
-
-                        # if page not in self.docs_to_words_to_counts[word_stem]:
-                        #     self.docs_to_words_to_counts[word_stem][page] = 0
-                        
-                            # inner_dict = self.docs_to_words_to_counts[word_stem]
-                            # inner_dict[page]
-                        #self.word_corpus.add(word_stem)
-                        
-                
-           
-
-               # print(term)
-                
-        #print(self.word_corpus)
         print(self.docs_to_words_to_counts)
         """ treat linked text as words as well so that we can stem the linked test/remove stop/update maps """
 
