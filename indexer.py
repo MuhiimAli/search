@@ -79,6 +79,7 @@ class Index:
         #print(self.all_page_ids)
         #print(self.contain_ids)
     contain_ids = set()
+    
     def ids_with_no_link(self):
         for id in self.all_page_ids:
             if id not in self.contain_ids:
@@ -199,4 +200,4 @@ class Index:
 
         
 
-var = Index('our_wiki_files/testing_weights','indexer_output_files/titles', 'indexer_output_files/words')
+var = Index('search-MuhiimAli-jchen1095/our_wiki_files/testing_weights','search-MuhiimAli-jchen1095/indexer_output_files/titles', 'search-MuhiimAli-jchen1095/indexer_output_files/words')
