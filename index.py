@@ -81,16 +81,18 @@ class Index:
         #print(self.contain_ids)
     contain_ids = set()
     def ids_with_no_link(self):
+        all_page_ids_copy = self.all_page_ids.copy()
         for id in self.all_page_ids:
             if id not in self.contain_ids:
-               # self.all_page_ids.remove(id)
-                self.page_to_page_links.update({id: self.all_page_ids})
+                all_page_ids_copy.remove(id)
+                self.page_to_page_links.update({id:all_page_ids_copy})
         print(self.page_to_page_links)
                 
 
     def populate_id_to_set_of_ids(self, id :int, sliced_page_links : str):
+        page_titles_set = set()
         if id not in self.page_to_page_links:
-            self.page_to_page_links[id] = set()
+            self.page_to_page_links[id] = page_titles_set
         self.page_to_page_links[id].add(sliced_page_links)
         #print(self.page_to_page_links)
        
