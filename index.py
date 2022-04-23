@@ -54,7 +54,7 @@ class Index:
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    self.contain_ids.add(id)
+                    self.ids_with_links_set.add(id)
                     sliced_page_links = self.handle_Links(term,True)
                     self.populate_id_to_set_of_ids(id, sliced_page_links)
                     self.populate_title_to_page_id()
@@ -66,6 +66,7 @@ class Index:
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_counts_dict(word_stem, id)
+                
                # print(term)
                 
         #print(self.word_corpus)
@@ -84,10 +85,11 @@ class Index:
         #print(self.contain_ids)
     contain_ids = set()
     
+    ids_with_links_set = set()
     def ids_with_no_link(self):
         all_page_ids_copy = self.all_page_ids.copy()
         for id in self.all_page_ids:
-            if id not in self.contain_ids:
+            if id not in self.ids_with_links_set:
                 all_page_ids_copy.remove(id)
                 for x in all_page_ids_copy:
                     thesetitles = set()
