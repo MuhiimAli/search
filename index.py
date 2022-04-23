@@ -67,6 +67,7 @@ class Index:
                # print(term)
                 
         #print(self.word_corpus)
+        #print(self.page_to_page_links)
        
 
         #print(self.docs_to_words_to_counts)
@@ -84,15 +85,15 @@ class Index:
             if id not in self.contain_ids:
                # self.all_page_ids.remove(id)
                 self.page_to_page_links.update({id: self.all_page_ids})
-        #print(self.page_to_page_links)
+        print(self.page_to_page_links)
                 
 
     def populate_id_to_set_of_ids(self, id :int, sliced_page_links : str):
         if id not in self.page_to_page_links:
             self.page_to_page_links[id] = set()
         self.page_to_page_links[id].add(sliced_page_links)
-        #print(self.contain_ids)
-        print(self.page_to_page_links)
+        #print(self.page_to_page_links)
+       
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
