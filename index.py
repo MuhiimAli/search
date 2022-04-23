@@ -115,7 +115,7 @@ class Index:
     def ids_to_titles(self):
         ids_to_titles_dict = {}
         for page in self.all_pages:
-            title = str = (page.find('title').text).strip()
+            title: str = (page.find('title').text).strip()
             id: int = int(page.find('id').text)
             ids_to_titles_dict[id] = title
             self.file_io.write_title_file(self.title_file, ids_to_titles_dict)
