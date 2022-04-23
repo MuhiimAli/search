@@ -1,18 +1,23 @@
 <xml>
     <page>
-        <title>PageA</title>
+        <title>A</title>
         <id>1</id>
-        <text>[[PageB]] [[PageC]]</text>
+        <text>[[D]] [[B|Hello]] [[A]]</text>
     </page>
     <page>
-        <title>PageB</title>
+        <title>B</title>
         <id>2</id>
-        <text> </text>
+        <text>[[D]] [[C]] [[C]]</text>
     </page>
     <page>
-        <title>PageC</title>
+        <title>C</title>
         <id>3</id>
-        <text>[[PageA|F]]</text>
+        <text>hello world!!</text>
+    </page>
+    <page>
+        <title>D</title>
+        <id>4</id>
+        <text>[[A|F]] [[C]]</text>
     </page>
 </xml>
        

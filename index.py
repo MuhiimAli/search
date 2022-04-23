@@ -38,25 +38,24 @@ class Index:
         self.compute_term_frequency()
         self.compute_term_relevance()
         self.write_words_file()
+        self.get_all_page_ids()
+        self.ids_with_no_link()
         
     docs_to_words_to_counts = {} 
     page_to_page_links = {}
     id_to_highest_freq = {}
-    links_set = set ()
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
             page_title: str = page.find('title').text #getting the title of each page. 
             id: int = int(page.find('id').text)
-            page_tokens = re.findall(self.tokenization_regex,page_title + ' '+ text)
+            page_tokens = re.findall(self.tokenization_regex,page_title +''+ text)
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    # sliced_page_links = self.handle_Links(term,True)
-                    # if id not in self.page_to_page_links:
-                    #     self.page_to_page_links[id] = {}
-                    #     self.links_set.add(sliced_page_links)
-                    #     self.page_to_page_links[id] = self.links_set
+                    self.contain_ids.add(id)
+                    sliced_page_links = self.handle_Links(term,True)
+                    self.populate_id_to_set_of_ids(id, sliced_page_links)
                     sliced_text_links= self.handle_Links(term, False)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
@@ -68,15 +67,32 @@ class Index:
                # print(term)
                 
         #print(self.word_corpus)
-        print(self.page_to_page_links)
+       
 
         #print(self.docs_to_words_to_counts)
         #print(self.id_to_highest_freq)
-    def page_page_links(self, id :int, sliced_page_links : str):
+    all_page_ids = set()
+    def get_all_page_ids(self):
+        for page in self.all_pages:
+            id: int = int(page.find('id').text)
+            self.all_page_ids.add(id)
+        #print(self.all_page_ids)
+        #print(self.contain_ids)
+    contain_ids = set()
+    def ids_with_no_link(self):
+        for id in self.all_page_ids:
+            if id not in self.contain_ids:
+               # self.all_page_ids.remove(id)
+                self.page_to_page_links.update({id: self.all_page_ids})
+        #print(self.page_to_page_links)
+                
+
+    def populate_id_to_set_of_ids(self, id :int, sliced_page_links : str):
         if id not in self.page_to_page_links:
-            self.page_to_page_links[id] = {}
-            self.links_set.add(sliced_page_links)
-            self.page_to_page_links[id] = self.links_set
+            self.page_to_page_links[id] = set()
+        self.page_to_page_links[id].add(sliced_page_links)
+        #print(self.contain_ids)
+        print(self.page_to_page_links)
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
@@ -171,6 +187,7 @@ class Index:
                 self.words_to_doc_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
             #print(self.idf_dict[word])
        # print(self.words_to_doc_relevance)
+        
 
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_doc_relevance)
