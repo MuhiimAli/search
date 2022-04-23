@@ -42,7 +42,8 @@ class Index:
         self.ids_with_no_link()
         
     docs_to_words_to_counts = {} 
-    page_to_page_links = {}
+    page_id_to_title = {}
+    title_to_page_id = {}
     id_to_highest_freq = {}
     def parse(self):
         for page in self.all_pages:#looping through all the pages
@@ -53,9 +54,10 @@ class Index:
             links = re.findall(self.link_regex, text)
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    self.contain_ids.add(id)
+                    self.ids_with_links_set.add(id)
                     sliced_page_links = self.handle_Links(term,True)
                     self.populate_id_to_set_of_ids(id, sliced_page_links)
+                    self.populate_title_to_page_id()
                     sliced_text_links= self.handle_Links(term, False)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
@@ -64,10 +66,12 @@ class Index:
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_counts_dict(word_stem, id)
+                
                # print(term)
                 
         #print(self.word_corpus)
         #print(self.page_to_page_links)
+        print(self.title_to_page_id)
        
 
         #print(self.docs_to_words_to_counts)
@@ -79,23 +83,29 @@ class Index:
             self.all_page_ids.add(id)
         #print(self.all_page_ids)
         #print(self.contain_ids)
-    contain_ids = set()
+    ids_with_links_set = set()
     def ids_with_no_link(self):
         all_page_ids_copy = self.all_page_ids.copy()
         for id in self.all_page_ids:
-            if id not in self.contain_ids:
+            if id not in self.ids_with_links_set:
                 all_page_ids_copy.remove(id)
-                self.page_to_page_links.update({id:all_page_ids_copy})
-        print(self.page_to_page_links)
+                self.page_id_to_title.update({id:all_page_ids_copy})
+        print(self.page_id_to_title)
                 
 
     def populate_id_to_set_of_ids(self, id :int, sliced_page_links : str):
         page_titles_set = set()
-        if id not in self.page_to_page_links:
-            self.page_to_page_links[id] = page_titles_set
-        self.page_to_page_links[id].add(sliced_page_links)
+        if id not in self.page_id_to_title:
+            self.page_id_to_title[id] = page_titles_set
+        self.page_id_to_title[id].add(sliced_page_links)
         #print(self.page_to_page_links)
        
+    def populate_title_to_page_id(self):
+        for page in self.all_pages:
+            title = str = (page.find('title').text).strip()
+            id: int = int(page.find('id').text)
+            if title not in self.title_to_page_id:
+                self.title_to_page_id[title] = id
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
