@@ -35,7 +35,6 @@ class Index:
         self.compute_n_i()
         self.compute_idf()
         self.populate_id_to_most_freq_count()
-        self.populate_title_to_page_id
         self.compute_term_frequency()
         self.compute_term_relevance()
         self.write_words_file()
@@ -58,6 +57,7 @@ class Index:
                     self.contain_ids.add(id)
                     sliced_page_links = self.handle_Links(term,True)
                     self.populate_id_to_set_of_ids(id, sliced_page_links)
+                    self.populate_title_to_page_id()
                     sliced_text_links= self.handle_Links(term, False)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
@@ -96,7 +96,7 @@ class Index:
             self.page_id_to_title[id] = set()
         self.page_id_to_title[id].add(sliced_page_links)
         #print(self.contain_ids)
-        print(self.page_id_to_title)
+        # print(self.page_id_to_title)
 
     def populate_title_to_page_id(self):
         for page in self.all_pages:
