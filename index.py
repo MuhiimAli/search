@@ -83,12 +83,17 @@ class Index:
         #print(self.all_page_ids)
         #print(self.contain_ids)
     contain_ids = set()
+    
     def ids_with_no_link(self):
         all_page_ids_copy = self.all_page_ids.copy()
         for id in self.all_page_ids:
             if id not in self.contain_ids:
                 all_page_ids_copy.remove(id)
-                self.page_id_to_title.update({id:all_page_ids_copy})
+                for x in all_page_ids_copy:
+                    thesetitles = set()
+                    y = self.ids_to_titles_dict[x]
+                    thesetitles.add(y)
+                self.page_id_to_title.update({id:thesetitles})
         print(self.page_id_to_title)
                 
 
@@ -123,13 +128,14 @@ class Index:
             processed_word =nltk_test.stem(term)
             self.word_corpus.add(processed_word)
             return processed_word
+    
+    ids_to_titles_dict = {}
     def ids_to_titles(self):
-        ids_to_titles_dict = {}
         for page in self.all_pages:
             title: str = (page.find('title').text).strip()
             id: int = int(page.find('id').text)
-            ids_to_titles_dict[id] = title
-            self.file_io.write_title_file(self.title_file, ids_to_titles_dict)
+            self.ids_to_titles_dict[id] = title
+            self.file_io.write_title_file(self.title_file, self.ids_to_titles_dict)
 
     def populate_word_to_ids_counts_dict(self, word_stem: str, id : int):
         if word_stem != None:
