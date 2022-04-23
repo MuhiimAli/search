@@ -35,6 +35,7 @@ class Index:
         self.compute_n_i()
         self.compute_idf()
         self.populate_id_to_most_freq_count()
+        self.populate_title_to_page_id
         self.compute_term_frequency()
         self.compute_term_relevance()
         self.write_words_file()
@@ -68,6 +69,7 @@ class Index:
                # print(term)
                 
         #print(self.word_corpus)
+        print(self.title_to_page_id)
        
 
         #print(self.docs_to_words_to_counts)
@@ -96,8 +98,13 @@ class Index:
         #print(self.contain_ids)
         print(self.page_id_to_title)
 
-    def populate_title_to_page_id(self, title: str):
-        pass
+    def populate_title_to_page_id(self):
+        for page in self.all_pages:
+            title = str = (page.find('title').text).strip()
+            id: int = int(page.find('id').text)
+            if title not in self.title_to_page_id:
+                self.title_to_page_id[title] = id
+    
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
@@ -204,4 +211,4 @@ class Index:
 
         
 
-var = Index('search-MuhiimAli-jchen1095/our_wiki_files/testing_weights','search-MuhiimAli-jchen1095/indexer_output_files/titles', 'search-MuhiimAli-jchen1095/indexer_output_files/words')
+var = Index('our_wiki_files/testing_weights','indexer_output_files/titles', 'indexer_output_files/words')
