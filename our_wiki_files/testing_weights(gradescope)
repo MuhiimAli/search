@@ -2,7 +2,7 @@
     <page>
         <title>A</title>
         <id>1</id>
-        <text>[[B]] [[D]]</text>
+        <text>[[B]] [[D]] [[A]]</text>
     </page>
     <page>
         <title>B</title>
@@ -17,6 +17,6 @@
     <page>
         <title>D</title>
         <id>4</id>
-        <text>[[A]] [[C]]</text>
+        <text>[[A]] [[C]] [[C]]</text>
     </page>
 </xml>
