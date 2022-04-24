@@ -1,33 +1,21 @@
 <xml>
   <page>
-    <title>
-      I have a dream
-    </title>
-    <id>
-      1
-    </id>
+    <title>she</title>
+    <id>1</id>
     <text>
       Let freedom ring from Stone Mountain Stone
     </text>
   </page>
   <page>
-    <title>
-	  Page 2
-	</title>
-	<id>
-	  2
-	</id>
+    <title>he</title>
+	<id>2</id>
 	<text>
       Let freedom ring from Lookout Mountain of Tennessee.
 	</text>
   </page>
   <page>
-    <title>
-	  Page 3
-	</title>
-	<id>
-	  3
-	</id>
+    <title>you</title>
+	<id>3</id>
 	<text>
      Let freedom ring from every hill and hill and hill.
 	</text>

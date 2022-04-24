@@ -1,35 +1,23 @@
 <xml>
   <page>
-    <title>
-      Philosophy
-    </title>
-    <id>
-      1
-    </id>
+    <title>Philosophy</title>
+    <id>1</id>
     <text>
       Process an XML document into a documents of philosophy
       [[A]] [[science]]
     </text>
   </page>
   <page>
-    <title>
-    science
-	</title>
-	<id>
-	  2
-	</id>
+    <title>science</title>
+	<id>2</id>
 	<text>
       Determine the relevance between science and philosophy
       [[C|gorgeous]] [[Determination]]
 	</text>
   </page>
   <page>
-    <title>
-	  cs200
-	</title>
-	<id>
-	  3
-	</id>
+    <title>cs200</title>
+	<id>3</id>
 	<text>
     Determine the authority of each science document
     [[Category: authority]] 

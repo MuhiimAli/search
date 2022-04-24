@@ -7,16 +7,16 @@
     <page>
         <title>B</title>
         <id>2</id>
-        <text> [[D]] [[C]]</text>
+        <text>[[D]] [[C]]</text>
     </page>
     <page>
         <title>C</title>
         <id>3</id>
-        <text>hello world!!</text>
+        <text>doesn't link to anything</text>
     </page>
     <page>
         <title>D</title>
         <id>4</id>
-        <text>[[C]] [[A]]</text>
+        <text>[[A]] [[C]]</text>
     </page>
 </xml>

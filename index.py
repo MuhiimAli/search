@@ -43,19 +43,17 @@ class Index:
         self.compute_term_relevance()
         self.write_words_file()
         
-    docs_to_words_to_counts = {} 
+    word_to_id_to_count = {} 
     all_page_titles_set = set()
-    
-    
     all_page_ids = set()
     def parse(self):
         for page in self.all_pages:#looping through all the pages
-            text: str = page.find('text').text #getting the text of each page (as a str)
-            page_title: str = page.find('title').text #getting the title of each page. 
+            page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
+            page_title: str = (page.find('title').text).lower() #getting the title of each page.
             id: int = int(page.find('id').text)
             self.all_page_ids.add(id) #keeps track of all the page ids
-            page_tokens = re.findall(self.tokenization_regex,page_title +''+ text)
-            links = re.findall(self.link_regex, text)
+            page_tokens = re.findall(self.tokenization_regex,page_title +' '+ page_text)
+            links = re.findall(self.link_regex, page_text)
             self.all_page_titles_set.add(page_title) #keeps track of all the page titles
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
@@ -72,6 +70,8 @@ class Index:
                     self.populate_word_to_ids_to_counts(word_stem, id)
                 
 
+        #print(self.word_corpus)
+        #print(self.word_to_id_to_count)
     ids_with_links_set = set()
     def ids_with_no_link(self):
         for ids in self.all_page_ids: #looping through all the page_titles
@@ -79,53 +79,40 @@ class Index:
                 copy_titles= self.all_page_titles_set.copy()
                 copy_titles.remove(self.ids_to_titles[ids])
                 self.page_id_to_set_of_titles[ids] = copy_titles
-        print(self.page_id_to_set_of_titles)
-
-
 
     page_id_to_set_of_titles = {}
     def populate_id_to_set_of_titles(self, id :int, sliced_page_links : str):
-        page_titles_set = set()
         if id not in self.page_id_to_set_of_titles:
-            self.page_id_to_set_of_titles[id] = page_titles_set
-           # print(sliced_page_links)
-        #print(self.all_page_titles_set)
-
-        if self.ids_to_titles[id] != sliced_page_links:
-           # if sliced_page_links != self.ids_to_titles[id] :
-        #if sliced_page_links in self.all_page_titles_set:
-            
-            self.page_id_to_set_of_titles[id].add(sliced_page_links)
-            # if sliced_page_links in self.all_page_titles_set:
-            #     self.page_id_to_set_of_titles[id].add(sliced_page_links)
-
-        #print(self.page_id_to_set_of_titles)
+            self.page_id_to_set_of_titles[id] =set()
+        #if self.ids_to_titles[id] in self.all_page_titles_set:
+        self.page_id_to_set_of_titles[id].add(sliced_page_links)
     id_to_set_of_ids = {}
     def populate_id_to_set_of_ids(self):
         for id in self.page_id_to_set_of_titles.keys():
             if id not in self.id_to_set_of_ids:
                 self.id_to_set_of_ids[id] = set()
-            for titles in self.page_id_to_set_of_titles[id]:
-                self.id_to_set_of_ids[id].add(self.title_to_page_id[titles])
+            for title in self.page_id_to_set_of_titles[id]:
+                #ignores if the page_links to itself or to a page that is not in the corpus
+               if title in self.all_page_titles_set and self.ids_to_titles[id] != title:  
+                self.id_to_set_of_ids[id].add(self.title_to_page_id[title.strip()])
+        print(self.page_id_to_set_of_titles)
         print(self.id_to_set_of_ids)
-            
-
-
+       
     title_to_page_id = {}
     def populate_title_to_page_id(self):
         for page in self.all_pages:
-            title: str = (page.find('title').text).strip()
+            title: str = ((page.find('title').text).strip()).lower()
             id: int = int(page.find('id').text)
             self.title_to_page_id[title] = id
         #print(self.title_to_page_id)
     ids_to_titles = {}
     def populate_ids_to_titles(self):
         for page in self.all_pages:
-            title: str = (page.find('title').text).strip()
+            title: str = ((page.find('title').text).strip()).lower()
             id: int = int(page.find('id').text)
             self.ids_to_titles[id] = title
             self.file_io.write_title_file(self.title_file, self.ids_to_titles)
-        print(self.ids_to_titles)
+        #print(self.ids_to_titles)
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
@@ -147,30 +134,29 @@ class Index:
 
     def populate_word_to_ids_to_counts(self, word_stem: str, id : int):
         if word_stem != None:
-            if word_stem not in self.docs_to_words_to_counts:
-                self.docs_to_words_to_counts[word_stem] = {}
-            if id not in self.docs_to_words_to_counts[word_stem]:
-                self.docs_to_words_to_counts[word_stem][id] = 0
-            self.docs_to_words_to_counts[word_stem][id]+=1
+            if word_stem not in self.word_to_id_to_count:
+                self.word_to_id_to_count[word_stem] = {}
+            if id not in self.word_to_id_to_count[word_stem]:
+                self.word_to_id_to_count[word_stem][id] = 0
+            self.word_to_id_to_count[word_stem][id]+=1
 
     id_to_highest_freq = {}
     def populate_id_to_most_freq_count(self):
-        words= self.docs_to_words_to_counts.keys()
+        words= self.word_to_id_to_count.keys()
         for word in words:
-            ids= self.docs_to_words_to_counts[word].keys()
+            ids= self.word_to_id_to_count[word].keys()
             for id in ids:
                 if id not in self.id_to_highest_freq:
                     self.id_to_highest_freq[id] = 0
                 self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
-                    self.docs_to_words_to_counts[word][id])
+                    self.word_to_id_to_count[word][id])
         #print(self.id_to_highest_freq)
         
-    word_idf = {}
     term_to_num_of_docs= {}
     def compute_n_i(self):
-        words=  self.docs_to_words_to_counts.keys()
+        words=  self.word_to_id_to_count.keys()
         for word in words:
-            id_list = self.docs_to_words_to_counts[word].keys() #getting the id associated with each word
+            id_list = self.word_to_id_to_count[word].keys() #getting the id associated with each word
             for id in id_list:
                 if word not in self.term_to_num_of_docs:
                     self.term_to_num_of_docs[word] = 0
@@ -180,7 +166,7 @@ class Index:
     idf_dict = {}
     def compute_idf(self):
         n = len(self.all_pages)
-        words= self.docs_to_words_to_counts.keys()#all the words in the corpus
+        words= self.word_to_id_to_count.keys()#all the words in the corpus
         for word in words:
             n_i = self.term_to_num_of_docs[word]
             self.idf_dict[word] = math.log(n/n_i)
@@ -188,35 +174,35 @@ class Index:
 
     tf_dict= {}
     def compute_term_frequency(self):
-        words= self.docs_to_words_to_counts.keys()
+        words= self.word_to_id_to_count.keys()
         for word in words:
-            ids = self.docs_to_words_to_counts[word].keys()
+            ids = self.word_to_id_to_count[word].keys()
             if  word not in self.tf_dict:
                 self.tf_dict[word]= {}
             for id in ids:
                 if id not in self.tf_dict[word]:
                     self.tf_dict[word][id]= 0
-                term_frequency = self.docs_to_words_to_counts[word][id]
+                term_frequency = self.word_to_id_to_count[word][id]
                 self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
         #print(self.tf_dict)
     
-    words_to_doc_relevance= {}
+    words_to_ids_to_relevance= {}
     def compute_term_relevance(self):
-        words=self.docs_to_words_to_counts.keys()
+        words=self.word_to_id_to_count.keys()
         for word in words:
-            ids = self.docs_to_words_to_counts[word].keys()
-            if word not in self.words_to_doc_relevance:
-                self.words_to_doc_relevance[word] = {}
+            ids = self.word_to_id_to_count[word].keys()
+            if word not in self.words_to_ids_to_relevance:
+                self.words_to_ids_to_relevance[word] = {}
             for id in ids:
-                if id not in self.words_to_doc_relevance[word]:
-                    self.words_to_doc_relevance[word][id] = 0
-                self.words_to_doc_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-            #print(self.idf_dict[word])
+                if id not in self.words_to_ids_to_relevance[word]:
+                    self.words_to_ids_to_relevance[word][id] = 0
+                self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
+        #print(self.words_to_ids_to_relevance)
         
         
 
     def write_words_file(self):
-        self.file_io.write_words_file(self.words_file, self.words_to_doc_relevance)
+        self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
 
     
 # if __name__ == "__main__":
@@ -225,5 +211,5 @@ class Index:
 
         
 
-var = Index('our_wiki_files/testing_weights','indexer_output_files/titles', 'indexer_output_files/words')
+var = Index('our_wiki_files/testing_weights(gradescope)','indexer_output_files/titles', 'indexer_output_files/words')
     

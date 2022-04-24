@@ -9,7 +9,6 @@ def write_title_file(title: str, dictionary: dict):
     output looks like:
     id1::title1
     id2::title2
-
     :param title: the document that titles will get written to
     :param dictionary: a hashmap that maps a page's id to its title
     :return: n/a
@@ -19,7 +18,7 @@ def write_title_file(title: str, dictionary: dict):
             title_fh.write(str(id_num) + "::" + title + "\n")
 
 
-def write_document_file(docs: str, ids_to_pageranks: dict):
+def write_docs_file(docs: str, ids_to_pageranks: dict):
     """
     Writes the dictionary of ids the value of
     that page's rank from the Pagerank algorithm to be read in querying
@@ -31,9 +30,8 @@ def write_document_file(docs: str, ids_to_pageranks: dict):
     :return: n/a
     """
     with open(docs, "w") as docs_fh:
-        for id_num in ids_to_pageranks.keys():
-            docs_fh.write(" " + str(ids_to_pageranks[id_num]))
-            docs_fh.write("\n")
+        for id_num, rank in ids_to_pageranks.items():
+            docs_fh.write(str(id_num) + " " + str(rank) + "\n")
 
 
 def write_words_file(words: str, words_to_doc_relevance: dict):
@@ -42,7 +40,6 @@ def write_words_file(words: str, words_to_doc_relevance: dict):
     output looks like:
     word1 id1_1 freq1_1 id1_2 freq1_2 ...
     word2 id2_1 freq2_1 id2_2 freq2_2 ...
-
     :param words: the file that will get written to
     :param words_to_doc_relevance: the dictionary that provides words -> ids -> term relevance
     :return: n/a
@@ -54,10 +51,10 @@ def write_words_file(words: str, words_to_doc_relevance: dict):
                 words_fh.write(str(id_num) + " " + str(relevance) + " ")
             words_fh.write("\n")
 
+
 def read_title_file(titles: str, ids_to_titles: dict):
     """
     reads the id and titles written in titles into the ids_to_titles dictionary
-
     :param titles: the file name that contains ids and titles
     :param ids_to_titles: the dictionary that ids and title will get written into
     :return: n/a
@@ -91,7 +88,6 @@ def read_docs_file(docs: str, ids_to_pageranks: dict):
 def read_words_file(words: str, words_to_doc_relevance: dict):
     """
     reads in the term relevance written in words into words_to_doc_relevance dictionary
-
     :param words: the file name that the words_to_doc_frequency dictionary was written to
     :param words_to_doc_frequency: a double dictionary, where a word is a key to a dictionary
     in which an id is a key to a frequency
@@ -110,5 +106,3 @@ def read_words_file(words: str, words_to_doc_relevance: dict):
                 if word not in words_to_doc_relevance:
                     words_to_doc_relevance[word] = {}
                 words_to_doc_relevance[word][page_id] = relevance
-
-

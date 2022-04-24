@@ -1,38 +1,25 @@
 <xml>
   <page>
-    <title>
-      Philosophy
-    </title>
-    <id>
-      1
-    </id>
+    <title>Philosophy</title>
+    <id>1</id>
     <text>
       Process an XML's DOCUMENT into a list of terms
-      [[ate cheese]]
+      [[science]]
     </text>
   </page>
   <page>
-    <title>
-    science
-	</title>
-	<id>
-	  2
-	</id>
+    <title>science</title>
+	<id>2</id>
 	<text>
       Determine the relevance between terms and documents
-      [[C|gorgeous]] [[Jen's cat and Jen]]
+      [[cs200|gorgeous]] [[category: philosophy]]
 	</text>
   </page>
   <page>
-    <title>
-	  cs200
-	</title>
-	<id>
-	  200
-	</id>
+    <title>cs200</title>
+	<id>3</id>
 	<text>
-    Determine the king's AUTHORITY and the king.
-    [[Category: science]]
+    Determine the xml king's AUTHORITY and the king.
 	</text>
   </page>
 </xml>
