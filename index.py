@@ -86,7 +86,6 @@ class Index:
     page_id_to_set_of_titles = {}
     def populate_id_to_set_of_titles(self, id :int, sliced_page_links : str):
         page_titles_set = set()
-        print('all_page' + str(self.all_page_titles_set))
         if id not in self.page_id_to_set_of_titles:
             self.page_id_to_set_of_titles[id] = page_titles_set
            # print(sliced_page_links)

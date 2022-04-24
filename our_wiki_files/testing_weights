@@ -2,12 +2,12 @@
     <page>
         <title>A</title>
         <id>1</id>
-        <text>[[A]] [[C]]</text>
+        <text>[[B]] [[D]]</text>
     </page>
     <page>
         <title>B</title>
         <id>2</id>
-        <text> [[C]] [[C]]</text>
+        <text> [[D]] [[C]]</text>
     </page>
     <page>
         <title>C</title>
@@ -17,11 +17,6 @@
     <page>
         <title>D</title>
         <id>4</id>
-        <text>hello world</text>
-    </page>
-     <page>
-        <title>E</title>
-        <id>5</id>
-        <text>hello world</text>
+        <text>[[C]] [[A]]</text>
     </page>
 </xml>
