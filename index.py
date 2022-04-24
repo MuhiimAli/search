@@ -67,8 +67,8 @@ class Index:
                     self.populate_word_to_ids_to_counts(word_stem, id)
                 
 
-        #print(self.word_corpus)
-        #print(self.word_to_id_to_count)
+        print(self.word_corpus)
+        print(self.word_to_id_to_count)
     ids_with_links_set = set()
     def ids_with_no_link(self):
         for ids in self.all_page_ids: #looping through all the page_titles
