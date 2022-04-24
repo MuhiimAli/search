@@ -44,7 +44,7 @@ class Index:
     word_to_id_to_count = {} 
     all_page_titles_set = set()
     all_page_ids = set()
-    weights_dict = {}
+    weights_dict = {} #creating weights dict
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
@@ -72,20 +72,20 @@ class Index:
         print(self.word_corpus)
         print(self.word_to_id_to_count)
 
-    def calculate_weights(self, n : int, nk : int):
+    def calculate_weights(self, n : int, nk : int): #helper method to calc weights for pages with link
         weight = (0.15/n) + (0.85)(1/nk)
         return weight
 
-    def populate_weights_dict(self):
-        for id in self.all_page_ids:
-            if id in self.ids_with_links_set:
+    def populate_weights_dict(self): #populating weights_dict
+        for id in self.all_page_ids: #looping thru all ids
+            if id in self.ids_with_links_set: #if the doc of current id has links, put it in the dictionary mapping to an empty int dict
                 self.weights_dict[id] = {}
-                for ids in self.id_to_set_of_ids[id]:
-                    weight_calc = self.calculate_weights(len(self.all_page_ids), len(self.self.id_to_set_of_ids[id]))
-                    self.weights_dict[id][ids] = weight_calc
-            if id not in self.ids_with_links_set:
-                for ids in self.self.id_to_set_of_ids[id]:
-                    self.weights_dict[id][ids] = (1/len(self.all_page_ids))
+                for ids in self.id_to_set_of_ids[id]: #for all ids of linked to docs of the current doc
+                    weight_calc = self.calculate_weights(len(self.all_page_ids), len(self.self.id_to_set_of_ids[id])) #calc weight
+                    self.weights_dict[id][ids] = weight_calc #map the linked to doc id to the weight between current doc and linked to do
+            if id not in self.ids_with_links_set: #if the doc is not linked to other docs
+                for ids in self.self.id_to_set_of_ids[id]: #for all docs that its linked to (all other docs except itself)
+                    self.weights_dict[id][ids] = (1/len(self.all_page_ids)) #mapping to weight
     
     print(weights_dict)
 
