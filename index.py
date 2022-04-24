@@ -1,4 +1,5 @@
 import math
+from multiprocessing import parent_process
 from os import nice
 import xml.etree.ElementTree as et
 #from sympy import numbered_symbols
@@ -30,82 +31,102 @@ class Index:
         root = wiki_tree.getroot()#get the root of the tree
         self.all_pages = root.findall('page')#this gets all the pages
         self.file_io = file_io
+        self.populate_ids_to_titles()
+        self.populate_title_to_page_id()
         self.parse()
-        self.ids_to_titles()
+        self.ids_with_no_link()
+        self.populate_id_to_set_of_ids()
         self.compute_n_i()
         self.compute_idf()
         self.populate_id_to_most_freq_count()
         self.compute_term_frequency()
         self.compute_term_relevance()
         self.write_words_file()
-        self.get_all_page_ids()
-        self.ids_with_no_link()
         
     docs_to_words_to_counts = {} 
-    page_id_to_title = {}
-    title_to_page_id = {}
-    id_to_highest_freq = {}
+    all_page_titles_set = set()
+    
+    
+    all_page_ids = set()
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             text: str = page.find('text').text #getting the text of each page (as a str)
             page_title: str = page.find('title').text #getting the title of each page. 
             id: int = int(page.find('id').text)
+            self.all_page_ids.add(id) #keeps track of all the page ids
             page_tokens = re.findall(self.tokenization_regex,page_title +''+ text)
             links = re.findall(self.link_regex, text)
+            self.all_page_titles_set.add(page_title) #keeps track of all the page titles
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    self.ids_with_links_set.add(id)
+                    self.ids_with_links_set.add(id) #keeps track of all the ids with links
                     sliced_page_links = self.handle_Links(term,True)
-                    self.populate_id_to_set_of_ids(id, sliced_page_links)
-                    self.populate_title_to_page_id()
+                    self.populate_id_to_set_of_titles(id, sliced_page_links)
                     sliced_text_links= self.handle_Links(term, False)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
                         word_stem = self.remove_stop_words_and_stem(word)
-                        self.populate_word_to_ids_counts_dict(word_stem, id)
+                        self.populate_word_to_ids_to_counts(word_stem, id)
                 else: #if the word is not a link
                     word_stem= self.remove_stop_words_and_stem(term)
-                    self.populate_word_to_ids_counts_dict(word_stem, id)
+                    self.populate_word_to_ids_to_counts(word_stem, id)
                 
-               # print(term)
-                
-        #print(self.word_corpus)
-        #print(self.page_to_page_links)
-        print(self.title_to_page_id)
-       
 
-        #print(self.docs_to_words_to_counts)
-        #print(self.id_to_highest_freq)
-    all_page_ids = set()
-    def get_all_page_ids(self):
-        for page in self.all_pages:
-            id: int = int(page.find('id').text)
-            self.all_page_ids.add(id)
-        #print(self.all_page_ids)
-        #print(self.contain_ids)
     ids_with_links_set = set()
     def ids_with_no_link(self):
-        all_page_ids_copy = self.all_page_ids.copy()
-        for id in self.all_page_ids:
-            if id not in self.ids_with_links_set:
-                all_page_ids_copy.remove(id)
-                self.page_id_to_title.update({id:all_page_ids_copy})
-        print(self.page_id_to_title)
-                
+        for ids in self.all_page_ids: #looping through all the page_titles
+            if ids not in self.ids_with_links_set: #looping through all the processed links
+                copy_titles= self.all_page_titles_set.copy()
+                copy_titles.remove(self.ids_to_titles[ids])
+                self.page_id_to_set_of_titles[ids] = copy_titles
+        print(self.page_id_to_set_of_titles)
 
-    def populate_id_to_set_of_ids(self, id :int, sliced_page_links : str):
+
+
+    page_id_to_set_of_titles = {}
+    def populate_id_to_set_of_titles(self, id :int, sliced_page_links : str):
         page_titles_set = set()
-        if id not in self.page_id_to_title:
-            self.page_id_to_title[id] = page_titles_set
-        self.page_id_to_title[id].add(sliced_page_links)
-        #print(self.page_to_page_links)
-       
+        print('all_page' + str(self.all_page_titles_set))
+        if id not in self.page_id_to_set_of_titles:
+            self.page_id_to_set_of_titles[id] = page_titles_set
+           # print(sliced_page_links)
+        #print(self.all_page_titles_set)
+
+        if self.ids_to_titles[id] != sliced_page_links:
+           # if sliced_page_links != self.ids_to_titles[id] :
+        #if sliced_page_links in self.all_page_titles_set:
+            
+            self.page_id_to_set_of_titles[id].add(sliced_page_links)
+            # if sliced_page_links in self.all_page_titles_set:
+            #     self.page_id_to_set_of_titles[id].add(sliced_page_links)
+
+        #print(self.page_id_to_set_of_titles)
+    id_to_set_of_ids = {}
+    def populate_id_to_set_of_ids(self):
+        for id in self.page_id_to_set_of_titles.keys():
+            if id not in self.id_to_set_of_ids:
+                self.id_to_set_of_ids[id] = set()
+            for titles in self.page_id_to_set_of_titles[id]:
+                self.id_to_set_of_ids[id].add(self.title_to_page_id[titles])
+        print(self.id_to_set_of_ids)
+            
+
+
+    title_to_page_id = {}
     def populate_title_to_page_id(self):
         for page in self.all_pages:
-            title = str = (page.find('title').text).strip()
+            title: str = (page.find('title').text).strip()
             id: int = int(page.find('id').text)
-            if title not in self.title_to_page_id:
-                self.title_to_page_id[title] = id
+            self.title_to_page_id[title] = id
+        #print(self.title_to_page_id)
+    ids_to_titles = {}
+    def populate_ids_to_titles(self):
+        for page in self.all_pages:
+            title: str = (page.find('title').text).strip()
+            id: int = int(page.find('id').text)
+            self.ids_to_titles[id] = title
+            self.file_io.write_title_file(self.title_file, self.ids_to_titles)
+        print(self.ids_to_titles)
 
     def handle_Links(self, term : str, page_link : bool):
         if "|" in term:
@@ -124,15 +145,8 @@ class Index:
             processed_word =nltk_test.stem(term)
             self.word_corpus.add(processed_word)
             return processed_word
-    def ids_to_titles(self):
-        ids_to_titles_dict = {}
-        for page in self.all_pages:
-            title: str = (page.find('title').text).strip()
-            id: int = int(page.find('id').text)
-            ids_to_titles_dict[id] = title
-            self.file_io.write_title_file(self.title_file, ids_to_titles_dict)
 
-    def populate_word_to_ids_counts_dict(self, word_stem: str, id : int):
+    def populate_word_to_ids_to_counts(self, word_stem: str, id : int):
         if word_stem != None:
             if word_stem not in self.docs_to_words_to_counts:
                 self.docs_to_words_to_counts[word_stem] = {}
@@ -199,7 +213,7 @@ class Index:
                     self.words_to_doc_relevance[word][id] = 0
                 self.words_to_doc_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
             #print(self.idf_dict[word])
-       # print(self.words_to_doc_relevance)
+        
         
 
     def write_words_file(self):
