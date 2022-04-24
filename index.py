@@ -9,6 +9,7 @@ nltk_test.stem("Stemming")
 import re
 import sys
 
+
 class Index:
     def __init__(self, xml_file : str, title_file : str, words_file: str):
         """
@@ -43,6 +44,7 @@ class Index:
     word_to_id_to_count = {} 
     all_page_titles_set = set()
     all_page_ids = set()
+    weights_dict = {}
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
@@ -69,6 +71,24 @@ class Index:
 
         print(self.word_corpus)
         print(self.word_to_id_to_count)
+
+    def calculate_weights(self, n : int, nk : int):
+        weight = (0.15/n) + (0.85)(1/nk)
+        return weight
+
+    def populate_weights_dict(self):
+        for id in self.all_page_ids:
+            if id in self.ids_with_links_set:
+                self.weights_dict[id] = {}
+                for ids in self.id_to_set_of_ids[id]:
+                    weight_calc = self.calculate_weights(len(self.all_page_ids), len(self.self.id_to_set_of_ids[id]))
+                    self.weights_dict[id][ids] = weight_calc
+            if id not in self.ids_with_links_set:
+                for ids in self.self.id_to_set_of_ids[id]:
+                    self.weights_dict[id][ids] = (1/len(self.all_page_ids))
+    
+    print(weights_dict)
+
     ids_with_links_set = set()
     def ids_with_no_link(self):
         for ids in self.all_page_ids: #looping through all the page_titles
