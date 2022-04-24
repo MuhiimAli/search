@@ -1,8 +1,5 @@
 import math
-from multiprocessing import parent_process
-from os import nice
 import xml.etree.ElementTree as et
-#from sympy import numbered_symbols
 import file_io
 from nltk.corpus import stopwords
 STOP_WORDS = set(stopwords.words('english'))
