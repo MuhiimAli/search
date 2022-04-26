@@ -1,8 +1,11 @@
+import keyword
 import math
+from tkinter import N
 import xml.etree.ElementTree as et
 import file_io
 from nltk.corpus import stopwords
 STOP_WORDS = set(stopwords.words('english'))
+import numpy as np
 from nltk.stem import PorterStemmer
 nltk_test = PorterStemmer()
 nltk_test.stem("Stemming")
@@ -11,7 +14,7 @@ import sys
 
 
 class Index:
-    def __init__(self, xml_file : str, title_file : str, words_file: str):
+    def __init__(self, xml_file : str, title_file : str, docs_file: str, words_file: str):
         """
         :param xml_file: the name of the input file that the indexer will read in and parse
         :param title_file: maps document IDs to document titles
@@ -20,7 +23,7 @@ class Index:
         """
         self.xml_file = xml_file
         self.title_file = title_file
-        # self.docs_file = docs_file
+        self.docs_file = docs_file
         self.words_file = words_file
         self.tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
         self.link_regex = '''\[\[[^\[]+?\]\]'''
@@ -34,12 +37,16 @@ class Index:
         self.parse()
         self.ids_with_no_link()
         self.populate_id_to_set_of_ids()
+        self.populate_weights_dict()
+        self.compute_page_rank()
         self.compute_n_i()
         self.compute_idf()
         self.populate_id_to_most_freq_count()
         self.compute_term_frequency()
         self.compute_term_relevance()
+        self.write_docs_file()
         self.write_words_file()
+    
         
     word_to_id_to_count = {} 
     all_page_titles_set = set()
@@ -53,42 +60,22 @@ class Index:
             self.all_page_ids.add(id) #keeps track of all the page ids
             page_tokens = re.findall(self.tokenization_regex,page_title +' '+ page_text)
             links = re.findall(self.link_regex, page_text)
-            self.all_page_titles_set.add(page_title) #keeps track of all the page titles
+            self.all_page_titles_set.add(page_title.strip()) #keeps track of all the page titles
             for term in page_tokens: #looping through a list of words
                 if term in links:#if the word is link
-                    self.ids_with_links_set.add(id) #keeps track of all the ids with links
-                    sliced_page_links = self.handle_Links(term,True)
-                    self.populate_id_to_set_of_titles(id, sliced_page_links)
+                    sliced_address = self.handle_Links(term,True)
+                    self.populate_id_to_set_of_titles(id, sliced_address)
                     sliced_text_links= self.handle_Links(term, False)
                     sliced_links_token = re.findall(self.tokenization_regex, sliced_text_links)#tokenizes link texts
                     for word in sliced_links_token:
-                        word_stem = self.remove_stop_words_and_stem(word)
-                        self.populate_word_to_ids_to_counts(word_stem, id)
+                        processed_link_text = self.remove_stop_words_and_stem(word)
+                        self.populate_word_to_ids_to_counts(processed_link_text, id)
                 else: #if the word is not a link
-                    word_stem= self.remove_stop_words_and_stem(term)
-                    self.populate_word_to_ids_to_counts(word_stem, id)
-                
+                    processed_link_text= self.remove_stop_words_and_stem(term)
+                    self.populate_word_to_ids_to_counts(processed_link_text, id)
 
-
-        print(self.word_corpus)
-        print(self.word_to_id_to_count)
-
-    def calculate_weights(self, n : int, nk : int): #helper method to calc weights for pages with link
-        weight = (0.15/n) + (0.85)(1/nk)
-        return weight
-
-    def populate_weights_dict(self): #populating weights_dict
-        for id in self.all_page_ids: #looping thru all ids
-            if id in self.ids_with_links_set: #if the doc of current id has links, put it in the dictionary mapping to an empty int dict
-                self.weights_dict[id] = {}
-                for ids in self.id_to_set_of_ids[id]: #for all ids of linked to docs of the current doc
-                    weight_calc = self.calculate_weights(len(self.all_page_ids), len(self.self.id_to_set_of_ids[id])) #calc weight
-                    self.weights_dict[id][ids] = weight_calc #map the linked to doc id to the weight between current doc and linked to do
-            if id not in self.ids_with_links_set: #if the doc is not linked to other docs
-                for ids in self.self.id_to_set_of_ids[id]: #for all docs that its linked to (all other docs except itself)
-                    self.weights_dict[id][ids] = (1/len(self.all_page_ids)) #mapping to weight
-    
-    print(weights_dict)
+        #print(self.word_corpus)
+        #print(self.word_to_id_to_count)
 
     ids_with_links_set = set()
     def ids_with_no_link(self):
@@ -102,8 +89,12 @@ class Index:
     def populate_id_to_set_of_titles(self, id :int, sliced_page_links : str):
         if id not in self.page_id_to_set_of_titles:
             self.page_id_to_set_of_titles[id] =set()
-        #if self.ids_to_titles[id] in self.all_page_titles_set:
         self.page_id_to_set_of_titles[id].add(sliced_page_links)
+        if sliced_page_links != self.ids_to_titles[id]:
+            #contains all the ids that link to something. It doesn't include if the page links to itself
+            self.ids_with_links_set.add(id) 
+            
+
     id_to_set_of_ids = {}
     def populate_id_to_set_of_ids(self):
         for id in self.page_id_to_set_of_titles.keys():
@@ -113,8 +104,8 @@ class Index:
                 #ignores if the page_links to itself or to a page that is not in the corpus
                if title in self.all_page_titles_set and self.ids_to_titles[id] != title:  
                 self.id_to_set_of_ids[id].add(self.title_to_page_id[title.strip()])
-        print(self.page_id_to_set_of_titles)
-        print(self.id_to_set_of_ids)
+        # print(self.page_id_to_set_of_titles)
+        # print(self.id_to_set_of_ids)
        
     title_to_page_id = {}
     def populate_title_to_page_id(self):
@@ -215,19 +206,63 @@ class Index:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
                 self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-        #print(self.words_to_ids_to_relevance)
-        
-        
-
+        print(self.words_to_ids_to_relevance)
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
 
+    def calculate_weights(self, n : int, nk : int): #helper method to calc weights for pages with link
+        weight = float(0.15/n) + float((0.85)*(1/nk))
+        return weight
+
+    
+    weights_dict = {}
+    def populate_weights_dict(self): #populating weights_dict
+        n = self.all_page_ids
+        for k in n: #looping thru all ids
+            nk= self.id_to_set_of_ids[k]
+            if k not in self.weights_dict:
+                self.weights_dict[k] = {}
+            for j in n:
+                if j in nk:
+                    self.weights_dict[k][j]=  self.calculate_weights(len(n), len(nk)) #calc weight
+                else:
+                    self.weights_dict[k][j] = (0.15/len(n)) #mapping to weight
+        #print(self.weights_dict)
+    
+
+    def euclidean_distance(self,page_rank: dict, r : dict):
+        r_dict = list(r.items())
+        page_rank_dict = list(page_rank.items())
+        #converting dictionary to an array
+        r_array= np.array(r_dict)
+        page_rank_array = np.array(page_rank_dict)
+        dist = np.sqrt(np.sum(np.square(r_array-page_rank_array)))
+        return dist
+
+    r = {}
+    ids_to_pageRank_dict= {}
+    def compute_page_rank(self):
+        n = len(self.all_page_ids)
+        for id in self.all_page_ids:
+            self.r[id] = 0   #initializes every rank in r to be 0
+            self.ids_to_pageRank_dict[id] = 1/n #initializes every rank in r' to be 1/n
+        while self.euclidean_distance(self.ids_to_pageRank_dict,self.r) > 0.001:
+            self.r = self.ids_to_pageRank_dict.copy()
+            for j in self.all_page_ids:
+                self.ids_to_pageRank_dict[j] = 0
+                for k in self.all_page_ids:
+                    self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * self.r[k]
+        return self.ids_to_pageRank_dict
+       # print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
+
+    def write_docs_file(self):
+        self.file_io.write_docs_file(self.docs_file,self.ids_to_pageRank_dict)
     
 # if __name__ == "__main__":
-#     var = Index(sys.argv[1],sys.argv[2],sys.argv[3])
-#     pass
+#     var = Index(sys.argv[1],sys.argv[2],sys.argv[3], sys.argv[4])
+    
 
         
 
-var = Index('our_wiki_files/testing_weights(gradescope)','indexer_output_files/titles', 'indexer_output_files/words')
-    
+var = Index('our_wiki_files/test_word_relevance_2.xml','titles.txt','docs.txt', 'words.txt' )
+    #python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt

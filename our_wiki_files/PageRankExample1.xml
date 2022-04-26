@@ -1,0 +1,18 @@
+<xml>
+    <page>
+        <title>A</title>
+        <id>1</id>
+        <text>[[A]] [[B]] [[C]] [[F]]</text>
+    </page>
+    <page>
+        <title>B</title>
+        <id>2</id>
+        <text>Hello!</text>
+    </page>
+    <page>
+        <title>C</title>
+        <id>3</id>
+        <text>[[A]]</text>
+    </page>
+</xml>
+       

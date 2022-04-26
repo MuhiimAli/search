@@ -2,17 +2,22 @@
     <page>
         <title>A</title>
         <id>1</id>
-        <text>[[B]] [[C]]</text>
+        <text>[[B]][[C]][[D]]</text>
     </page>
     <page>
         <title>B</title>
         <id>2</id>
-        <text> </text>
+        <text>[[A]] [[C]] [[F]] </text>
     </page>
     <page>
         <title>C</title>
         <id>3</id>
-        <text>[[A|F]]</text>
+        <text>[[B]]</text>
+    </page>
+    <page>
+        <title>D</title>
+        <id>4</id>
+        <text>[[A|F]] [[B]] [[C]]</text>
     </page>
 </xml>
-        <!--Expected: Rank(A) = 0.4326, Rank(B) = 0.2340, Rank(C) = 0.3333-->
+        
