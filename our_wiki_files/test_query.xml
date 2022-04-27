@@ -1,0 +1,52 @@
+<xml>
+    <page>
+        <title>Page A</title>
+        <id>1</id>
+        <text>Horses are hoofed mammals that have lived with humans for thousands of years. [[Page A]]
+        </text>
+    </page>
+    <page>
+        <title>Page B</title>
+        <id>2</id>
+        <text>Members of a horse band are not simply group animals with ganglike mentalities.[[Page A]]
+        </text>
+    </page>
+    <page>
+        <title>Page C</title>
+        <id>3</id>
+        <text>In prehistoric times the wild horse was probably first hunted for food.[[Page B]] [[Page D]
+        </text>
+    </page>
+    <page>
+        <title>Page D</title>
+        <id>4</id>
+        <text>The relationship of the horse to humans has been unique. 
+        [[Page A]] [[Page C]]
+        </text>
+    </page>
+    <page>
+        <title>Page E</title>
+        <id>5</id>
+        <text>A mature male horse is called a stallion, the female a mare.[[Page E]][[Page F]] [[Page G]]
+        </text>
+    </page>
+    <page>
+        <title>Page F</title>
+        <id>6</id>
+        <text>The horse's general form is characteristic of an animal of speed[[Page H]]
+        </text>
+    </page>
+    <page>
+        <title>Page G</title>
+        <id>7</id>
+        <text>The extremely large eyes placed far back on the elongated[[Page C]]
+        </text>
+    </page>
+    <page>
+        <title>Page H</title>
+        <id>8</id>
+        <text>The brown horse is almost black but has lighter areas.
+        </text>
+    </page>
+</xml>
+       

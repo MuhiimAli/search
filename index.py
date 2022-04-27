@@ -1,6 +1,4 @@
-import keyword
 import math
-from tkinter import N
 import xml.etree.ElementTree as et
 import file_io
 from nltk.corpus import stopwords
@@ -206,7 +204,7 @@ class Index:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
                 self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-        print(self.words_to_ids_to_relevance)
+        #print(self.words_to_ids_to_relevance)
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
 
@@ -252,8 +250,9 @@ class Index:
                 self.ids_to_pageRank_dict[j] = 0
                 for k in self.all_page_ids:
                     self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * self.r[k]
-        return self.ids_to_pageRank_dict
-       # print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
+        print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
+        #return self.ids_to_pageRank_dict
+       
 
     def write_docs_file(self):
         self.file_io.write_docs_file(self.docs_file,self.ids_to_pageRank_dict)
@@ -264,5 +263,5 @@ class Index:
 
         
 
-var = Index('our_wiki_files/test_word_relevance_2.xml','titles.txt','docs.txt', 'words.txt' )
-    #python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt
+var = Index('our_wiki_files/test_word_relevance_1.xml','titles.txt','docs.txt', 'words.txt' )
+#     # python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt
