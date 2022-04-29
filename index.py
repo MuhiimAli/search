@@ -33,6 +33,18 @@ class Index:
         self.all_pages = root.findall('page')#this gets all the pages
         self.file_io = file_io
        # self.populate_ids_to_titles()
+        self.word_to_id_to_count = {} 
+        self.all_page_ids = set()
+        self.weights_dict = {} #creating weights dict
+        self.id_to_links = defaultdict(set)
+        self.title_to_page_id = {}
+        self.ids_to_titles = {}
+        self. id_to_highest_freq = {}
+        self.term_to_num_of_docs= {}
+        self.idf_dict = {}
+        self.words_to_ids_to_relevance= {}
+        self.tf_dict= {}
+        self.ids_to_pageRank_dict= {}
         self.populate_title_to_page_id()
         self.parse()
         self.populate_weights_dict()
@@ -47,12 +59,7 @@ class Index:
         self.write_title_file()
     
         
-    word_to_id_to_count = {} 
-    all_page_ids = set()
-    weights_dict = {} #creating weights dict
-    id_to_links = defaultdict(set)
-    title_to_page_id = {}
-    ids_to_titles = {}
+   
     def parse(self):
         for page in self.all_pages:#looping through all the pages
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
@@ -116,7 +123,7 @@ class Index:
             self.word_to_id_to_count[word_stem][id]+=1
 
     
-    id_to_highest_freq = {}
+   
     def populate_id_to_most_freq_count(self):
         words= self.word_to_id_to_count.keys()
         for word in words:
@@ -130,7 +137,7 @@ class Index:
         #return id_to_highest_freq
         
         
-    term_to_num_of_docs= {}
+    
     def compute_n_i(self):
         words=  self.word_to_id_to_count.keys()
         for word in words:
@@ -142,7 +149,7 @@ class Index:
         #return term_to_num_of_docs
         #print(self.term_to_num_of_docs)
             
-    idf_dict = {}
+    
     def compute_idf(self):
         n = len(self.all_pages)
         words= self.word_to_id_to_count.keys()#all the words in the corpus
@@ -152,7 +159,7 @@ class Index:
         #return idf_dict
         #print(self.idf_dict)
 
-    tf_dict= {}
+    
     def compute_term_frequency(self):
         words= self.word_to_id_to_count.keys()
         for word in words:
@@ -167,7 +174,7 @@ class Index:
         #return tf_dict
         #print(self.tf_dict)
     
-    words_to_ids_to_relevance= {}
+    
     def compute_term_relevance(self):
         words=self.word_to_id_to_count.keys()
         for word in words:
@@ -184,7 +191,7 @@ class Index:
 
 
     
-    weights_dict = {}
+    
     def populate_weights_dict(self): #populating weights_dict
         n = len(self.all_page_ids)
         e = 0.15
@@ -220,7 +227,7 @@ class Index:
         return dist
 
     
-    ids_to_pageRank_dict= {}
+    
     def compute_page_rank(self):
         r_dict = {}
         n = len(self.all_page_ids)
@@ -246,7 +253,7 @@ if __name__ == "__main__":
     
 
 # # time python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
-# # time python3 index.py wikis/PageRankExample3.xml titles.txt docs.txt words.txt
+# # time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
         
 
 # var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
