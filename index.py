@@ -7,7 +7,6 @@ STOP_WORDS = set(stopwords.words('english'))
 import numpy as np
 from nltk.stem import PorterStemmer
 nltk_test = PorterStemmer()
-nltk_test.stem("Stemming")
 from collections import defaultdict
 import re
 import sys
@@ -45,12 +44,11 @@ class Index:
         self.words_to_ids_to_relevance= {}
         self.tf_dict= {}
         self.ids_to_pageRank_dict= {}
-        self.populate_title_to_page_id()
+        self.populate_title_page_id()
         self.parse()
         self.populate_weights_dict()
         self.compute_page_rank()
-        self.compute_n_i()
-        self.populate_id_to_most_freq_count()
+        self.compute_most_freq_count_and_n_i()
         self.compute_idf()
         self.compute_term_frequency()
         self.compute_term_relevance()
@@ -86,7 +84,7 @@ class Index:
         #print(self.id_to_links)
 
    
-    def populate_title_to_page_id(self):
+    def populate_title_page_id(self):
         for page in self.all_pages:
             title: str = ((page.find('title').text).strip()).lower()
             id: int = int(page.find('id').text)
@@ -124,11 +122,14 @@ class Index:
 
     
    
-    def populate_id_to_most_freq_count(self):
+    def compute_most_freq_count_and_n_i(self):
         words= self.word_to_id_to_count.keys()
         for word in words:
             ids= self.word_to_id_to_count[word].keys()
             for id in ids:
+                if word not in self.term_to_num_of_docs:
+                    self.term_to_num_of_docs[word] = 0
+                self.term_to_num_of_docs[word]+=1
                 if id not in self.id_to_highest_freq:
                     self.id_to_highest_freq[id] = 0
                 self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
@@ -137,25 +138,13 @@ class Index:
         #return id_to_highest_freq
         
         
-    
-    def compute_n_i(self):
-        words=  self.word_to_id_to_count.keys()
-        for word in words:
-            id_list = self.word_to_id_to_count[word].keys() #getting the id associated with each word
-            for id in id_list:
-                if word not in self.term_to_num_of_docs:
-                    self.term_to_num_of_docs[word] = 0
-                self.term_to_num_of_docs[word]+=1
-        #return term_to_num_of_docs
-        #print(self.term_to_num_of_docs)
-            
-    
     def compute_idf(self):
         n = len(self.all_pages)
         words= self.word_to_id_to_count.keys()#all the words in the corpus
         for word in words:
             n_i = self.term_to_num_of_docs[word]
             self.idf_dict[word] = math.log(n/n_i)
+
         #return idf_dict
         #print(self.idf_dict)
 
@@ -203,7 +192,7 @@ class Index:
                     self.weights_dict[j][k] = {}
                 if j == k:
                     self.weights_dict[j][k] = e/n
-                elif k in self.id_to_links[j]: #TODO come back 
+                elif k in self.id_to_links[j]: 
                     nk= len(self.id_to_links[j])
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
                 elif  self.id_to_links[j] == set():
@@ -253,7 +242,8 @@ if __name__ == "__main__":
     
 
 # # time python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
-# # time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
+#time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
+# # 
         
 
 # var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
