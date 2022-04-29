@@ -75,12 +75,12 @@ class Index:
                     self.populate_word_to_ids_to_counts(processed_link_text, id)
 
         #print(self.word_corpus)
-        print(self.id_to_links)
+        #print(self.id_to_links)
 
    
     def populate_title_to_page_id(self):
         for page in self.all_pages:
-            title: str = ((page.find('title').text).strip()).lower()
+            title: str = (page.find('title').text).strip()
             id: int = int(page.find('id').text)
             self.title_to_page_id[title] = id
             self.ids_to_titles[id] = title
@@ -177,7 +177,7 @@ class Index:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
                 self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-        print(self.words_to_ids_to_relevance)
+        #print(self.words_to_ids_to_relevance)
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
 
@@ -195,7 +195,7 @@ class Index:
                     self.weights_dict[j][k] = {}
                 if j == k:
                     self.weights_dict[j][k] = e/n
-                elif k in self.id_to_links[j]: #TODO come back 
+                elif k in self.id_to_links[j]: 
                     nk= len(self.id_to_links[j])
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
                 elif  self.id_to_links[j] == set():
@@ -232,7 +232,7 @@ class Index:
                 self.ids_to_pageRank_dict[j] = 0
                 for k in self.all_page_ids:
                     self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k]
-        print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
+        #print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
         #return self.ids_to_pageRank_dict
         #pass
 
@@ -248,5 +248,5 @@ if __name__ == "__main__":
 # # time python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
         
 
-# var = Index('our_wiki_files/test_word_relevance_2.xml', 'titles.txt','docs.txt', 'words.txt')
+# var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
 #     # python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt
