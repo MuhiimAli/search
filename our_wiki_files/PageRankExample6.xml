@@ -7,7 +7,7 @@
     <page>
         <title>B</title>
         <id>2</id>
-        <text>[[A]] [[C]] [[F]] </text>
+        <text>[[A]] [[C]] </text>
     </page>
     <page>
         <title>C</title>
@@ -20,4 +20,4 @@
         <text>[[A|F]] [[B]] [[C]]</text>
     </page>
 </xml>
-        
+        <!--Testing link different than text (pipe)-->

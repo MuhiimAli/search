@@ -1,0 +1,18 @@
+<xml>
+    <page>
+        <title>How Are You?</title>
+        <id>13</id>
+        <text>cat cat cat cat cat cat cat</text>
+    </page>
+    <page>
+        <title>flower garden</title>
+        <id>2</id>
+        <text>Tulip TULIP tulip</text>
+    </page>
+    <page>
+        <title>no Way!</title>
+        <id>100</id>
+        <text>[[Get Outta Here|word]]</text>
+    </page>
+</xml>
+       

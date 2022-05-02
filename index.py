@@ -1,4 +1,3 @@
-
 import math
 import xml.etree.ElementTree as et
 import file_io
@@ -14,11 +13,16 @@ import sys
 
 class Index:
     def __init__(self, xml_file : str, title_file : str, docs_file: str, words_file: str):
-        """
+        """Main method, initializes global dictionaries 
+        Parameters:
         :param xml_file: the name of the input file that the indexer will read in and parse
         :param title_file: maps document IDs to document titles
         :param doc_file: stores the rankings computed by PageRank
-        :param worsds_file: stores the relevance of documents to words
+        :param words_file: stores the relevance of documents to words
+
+        Returns: none
+
+        Throws: none
         """
         self.xml_file = xml_file
         self.title_file = title_file
@@ -38,7 +42,7 @@ class Index:
         self.id_to_links = defaultdict(set)
         self.title_to_page_id = {}
         self.ids_to_titles = {}
-        self. id_to_highest_freq = {}
+        self.id_to_highest_freq = {}
         self.term_to_num_of_docs= {}
         self.idf_dict = {}
         self.words_to_ids_to_relevance= {}
@@ -59,6 +63,10 @@ class Index:
         
    
     def parse(self):
+        """Parses the inputted xml file
+        Parameters:
+        Returns:
+        """
         for page in self.all_pages:#looping through all the pages
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
             page_title: str = (page.find('title').text).lower() #getting the title of each page.
@@ -81,55 +89,96 @@ class Index:
                     self.populate_word_to_ids_to_counts(processed_link_text, id)
 
         #print(self.word_corpus)
-        #print(self.id_to_links)
+        print(self.id_to_links)
 
-   
-    def populate_title_page_id(self):
-        for page in self.all_pages:
-            title: str = ((page.find('title').text).strip()).lower()
+   #populating both title title_to_page_id and ids_to_titles at the same time increases efficiency as we don't have to loop through the pages twice for both dict
+    def populate_title_page_id(self): 
+        """Populates title_to_page_id and ids_to_titles dictionaries
+
+        Parameters: none
+        Returns: none
+        Throws: none
+        """
+        for page in self.all_pages: #looping through all pages
+            title: str = ((page.find('title').text).strip()).lower()  #getting title
             id: int = int(page.find('id').text)
-            self.title_to_page_id[title] = id
-            self.ids_to_titles[id] = title
-        #print(self.title_to_page_id)
+            self.title_to_page_id[title] = id #mapping title to id
+            self.ids_to_titles[id] = title #mapping id to title
+        
+    
     def write_title_file(self):
+        """Writes in a file for the titles
+        Parameters: none
+        Returns: none
+        Throws: none
+        """
         self.file_io.write_title_file(self.title_file, self.ids_to_titles)
 
+
     def handle_Links(self, term : str, page_link : bool):
-        if "|" in term:
-            sliced = term[2:-2]
-            no_bar = sliced.split("|")
-            if page_link == True:
-                return no_bar[0]
+        """Processes words in text that are links
+
+        Parameters:
+        term -- word that is a link
+        page_link -- boolean if the word returned should be the link address or the link text
+        
+        Return:
+        no_bar or sliced -- a string of the processed link
+        
+        Throws: none
+        """
+        if "|" in term: #if text of link is different than the page it links too
+            sliced = term[2:-2] #obtaining the word from term without the link brackets by extracting all letters except the first and last two characters
+            no_bar = sliced.split("|") #splitting the word along the bar to obtain a list of the word(s) before and after the bar
+            if page_link == True: #if the desired returned word is the link address
+                return no_bar[0] #return the left word(s) of the bar
             else:
-                return no_bar[1]
-        else:
-            sliced = term[2:-2]
+                return no_bar[1] #return the right word(s) of the bar
+        else: #if text of link is the same as the page it links too
+            sliced = term[2:-2] 
             return sliced
 
     def remove_stop_words_and_stem(self, term: str):
-        if term not in STOP_WORDS:
-            processed_word =nltk_test.stem(term)
+        """If the argument is not a stop word, the word is reduced to the base root/stem of the word
+        Parameters:
+        term -- string to be stripped of stop words and stemmed 
+        Returns: string of processed input string
+        Throws: none
+        """
+        if term not in STOP_WORDS: #if the word is not a stop word, the word is stemmed
+            processed_word = nltk_test.stem(term)
             #self.word_corpus.add(processed_word)
             return processed_word
 
     def populate_word_to_ids_to_counts(self, word_stem: str, id : int):
-        if word_stem != None:
-            if word_stem not in self.word_to_id_to_count:
-                self.word_to_id_to_count[word_stem] = {}
-            if id not in self.word_to_id_to_count[word_stem]:
-                self.word_to_id_to_count[word_stem][id] = 0
-            self.word_to_id_to_count[word_stem][id]+=1
+        """Fills the double dictionary that maps words to an internal dictionary of ids mapped to the word count
+        Parameters:
+        word_stem -- string of the stemmed word, key of the outer dictionary
+        id -- integer id of the doc that the word_stem appears in
+        Returns: none
+        Throws: none
+        """
+        if word_stem != None: #if word is not null/none
+            if word_stem not in self.word_to_id_to_count: #if word is not yet put in outer dictionary
+                self.word_to_id_to_count[word_stem] = {} #creating internal dictionary that the word_stem maps to
+            if id not in self.word_to_id_to_count[word_stem]: #if id not yet in the internal dictionary that word_stem maps to
+                self.word_to_id_to_count[word_stem][id] = 0 #id mapped to 0
+            self.word_to_id_to_count[word_stem][id]+=1 #increasing count by 1
 
     
-   
     def compute_most_freq_count_and_n_i(self):
-        words= self.word_to_id_to_count.keys()
-        for word in words:
-            ids= self.word_to_id_to_count[word].keys()
-            for id in ids:
+        """Populates term_to_num_of_docs dictionary and id_to_highest_freq dictionary
+        Parameters: none
+        Returns: none
+        Throws: none
+        """
+        words = self.word_to_id_to_count.keys() #extracting all words in word_to_id_to_count
+        for word in words: #looping thru each word
+            ids= self.word_to_id_to_count[word].keys() #extracting all ids
+            for id in ids: #looping thru each id
                 if word not in self.term_to_num_of_docs:
                     self.term_to_num_of_docs[word] = 0
-                self.term_to_num_of_docs[word]+=1
+                self.term_to_num_of_docs[word]+=1 #counting each doc that the term appears in
                 if id not in self.id_to_highest_freq:
                     self.id_to_highest_freq[id] = 0
                 self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
@@ -146,7 +195,7 @@ class Index:
             self.idf_dict[word] = math.log(n/n_i)
 
         #return idf_dict
-        #print(self.idf_dict)
+        # print(self.idf_dict)
 
     
     def compute_term_frequency(self):
