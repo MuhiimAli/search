@@ -67,7 +67,7 @@ class Query:
             all_keys.sort(key = lambda x : id_total_relevance[x]*self.ids_to_pageranks[x], reverse = True)
             range_x = min(10, len(all_keys))
             for x in range(range_x):
-                print(self.ids_to_titles[all_keys[x]])
+                print(str(x+1) + ' ' + self.ids_to_titles[all_keys[x]])
             
             
                     
@@ -88,7 +88,7 @@ class Query:
 
 
 if __name__ == "__main__":
-    query = Query('no','titles.txt','docs.txt','words.txt')
+    query = Query('--pagerank','titles.txt','docs.txt','words.txt')
 #    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
 
 

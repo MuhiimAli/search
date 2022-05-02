@@ -241,7 +241,7 @@ if __name__ == "__main__":
     var = Index(sys.argv[1],sys.argv[2],sys.argv[3], sys.argv[4])
     
 
-# # time python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
+# # time python3 index.py our_wiki_files/test_query.xml titles.txt docs.txt words.txt
 #time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
 # # 
         
