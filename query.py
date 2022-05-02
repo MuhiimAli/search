@@ -35,6 +35,8 @@ class Query:
         while True:
             query_set = set()
             user_input = input('search> ')
+            if user_input == '' or ' ':
+                print("Cannot search empty input. Please enter a word or different search input")
             if user_input == ':quit':
                 return 
             tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
@@ -44,6 +46,8 @@ class Query:
                     processed_word =nltk_test.stem(word)
                     query_set.add(processed_word)
             self.populate_total_relevance(query_set)
+            
+                
 
     
     def populate_total_relevance(self, query_set : list ):
@@ -58,6 +62,8 @@ class Query:
         self.rank_pages(all_keys, id_total_relevance)
 
     def rank_pages(self, all_keys: list, id_total_relevance: dict):
+        if len(all_keys) == 0:
+            print("No search results available. Try a different search!")
         if self.page_rank != '--pagerank':
             all_keys.sort(key = lambda x : id_total_relevance[x], reverse = True)
             range_x = min(10, len(all_keys))
@@ -88,8 +94,13 @@ class Query:
 
 
 if __name__ == "__main__":
-    query = Query('--pagerank','titles.txt','docs.txt','words.txt')
-#    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+# <<<<<<< HEAD
+#     query = Query('--pagerank','titles.txt','docs.txt','words.txt')
+# =======
+    query = Query('our_wiki_files/test_query.xml', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
+# >>>>>>> f5c72e4e283872533bbd035840c4d1fec0381ef3
+# #    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
+
 
 
    
