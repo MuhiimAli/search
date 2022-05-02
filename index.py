@@ -182,7 +182,7 @@ class Index:
                 if id not in self.id_to_highest_freq:
                     self.id_to_highest_freq[id] = 0
                 self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
-                    self.word_to_id_to_count[word][id])
+                    self.word_to_id_to_count[word][id]) #mapping id to the highest frequency by comparing the value that the id is currently mapped to to the count of the current word
         #print(self.id_to_highest_freq)
         #return id_to_highest_freq
         

@@ -1,10 +1,16 @@
 Muhiim Ali, Jennifer Chen
 
 Known Bugs:
+    Words with apostrophes
 
 User Instructions:
 
 Program:
+
+index.py is the indexer 
+
+query.py
+
 
 Extra/Unimplemented Features:
 

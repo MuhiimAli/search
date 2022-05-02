@@ -15,4 +15,4 @@
         <text>[[A]]</text>
     </page>
 </xml>
-       <!--Expected: Rank(A) = Rank(B) = Rank(C) =-->
+       <!--Expected: Rank(A) = 0.4326427, Rank(B) = 0.2340239, Rank(C) = 0.3333333-->

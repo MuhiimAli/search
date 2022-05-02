@@ -34,13 +34,17 @@ def test_ids_to_titles_and_title_to_page_id():
 def test_ids_to_links():
     pass
 
+#testing highest frequency calculations
 def test_id_to_highest_freq():
     pass
 
 def test_term_to_num_docs():
     pass
 
-#TEST TERM TO DOC RELEVANCE
+def test_empty_wiki():
+    pass
+
+#TEST TERM TO DOC RELEVANCE and relevance calculations
 def test_words_to_ids_to_relevance():
     pass
 
@@ -48,12 +52,20 @@ def test_words_to_ids_to_relevance():
 def test_weights_dict():
     pass
 
+#testing euclidean distance for pagerank
+def test_euclidean_distance():
+    pass
 #TESTING PAGERANK
 def test_pagerank1b_dict():
     pagerank = Index('our_wiki_files/PageRankExample1b.xml', 'pagerank1bTitles', 'pagerank1bDocs', 'pagerank1bWords')
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.4326427),2: pytest.approx(0.2340239),3: pytest.approx(0.333333333)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
+def test_pagerank5():
+    pagerank = Index('our_wiki_files/PageRankExample5.xml', 'pagerank5Titles', 'pagerank5Docs', 'pagerank5Words')
+    print(pagerank.ids_to_pageRank_dict.values())
+    assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.05242, 0.001), 2: pytest.approx(0.4476, 0.001), 3: pytest.approx(0.05243, 0.001), 4: pytest.approx(0.4476, 0.001)}
+    assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 #QUERY UNIT TESTS
 def test_query1():
     pass
