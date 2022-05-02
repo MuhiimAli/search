@@ -1,4 +1,6 @@
 from locale import strcoll
+
+from numpy import empty
 #from sqlalchemy import all
 import file_io
 from nltk.corpus import stopwords
@@ -35,8 +37,6 @@ class Query:
         while True:
             query_set = set()
             user_input = input('search> ')
-            if user_input == '' or ' ':
-                print("Cannot search empty input. Please enter a word or different search input")
             if user_input == ':quit':
                 return 
             tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
@@ -46,6 +46,7 @@ class Query:
                     processed_word =nltk_test.stem(word)
                     query_set.add(processed_word)
             self.populate_total_relevance(query_set)
+            
             
                 
 
@@ -94,7 +95,7 @@ class Query:
 
 
 if __name__ == "__main__":
-    query = Query('our_wiki_files/test_query.xml', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
+    query = Query('--pagerank', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
 #    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
 
 
