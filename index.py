@@ -1,4 +1,6 @@
 import math
+from time import perf_counter
+#from time import perf_counter
 import xml.etree.ElementTree as et
 import file_io
 from nltk.corpus import stopwords
@@ -59,6 +61,9 @@ class Index:
         self.write_docs_file()
         self.write_words_file()
         self.write_title_file()
+       
+
+
     
         
    
@@ -89,7 +94,7 @@ class Index:
                     self.populate_word_to_ids_to_counts(processed_link_text, id)
 
         #print(self.word_corpus)
-        print(self.id_to_links)
+        #print(self.id_to_links)
 
    #populating both title title_to_page_id and ids_to_titles at the same time increases efficiency as we don't have to loop through the pages twice for both dict
     def populate_title_page_id(self): 
@@ -188,17 +193,22 @@ class Index:
         
         
     def compute_idf(self):
+        time_1=perf_counter()
         n = len(self.all_pages)
         words= self.word_to_id_to_count.keys()#all the words in the corpus
         for word in words:
             n_i = self.term_to_num_of_docs[word]
             self.idf_dict[word] = math.log(n/n_i)
+        time_2=perf_counter()
+        print('idf : ' + str(time_2-time_1))
+
 
         #return idf_dict
         # print(self.idf_dict)
 
     
     def compute_term_frequency(self):
+        time_1=perf_counter()
         words= self.word_to_id_to_count.keys()
         for word in words:
             ids = self.word_to_id_to_count[word].keys()
@@ -209,11 +219,13 @@ class Index:
                     self.tf_dict[word][id]= 0
                 term_frequency = self.word_to_id_to_count[word][id]
                 self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
+        time_2=perf_counter()
+        print('term_frequency : ' + str(time_2-time_1))
         #return tf_dict
-        #print(self.tf_dict)
     
     
     def compute_term_relevance(self):
+        time_1=perf_counter()
         words=self.word_to_id_to_count.keys()
         for word in words:
             ids = self.word_to_id_to_count[word].keys()
@@ -223,7 +235,10 @@ class Index:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
                 self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-        #print(self.words_to_ids_to_relevance)
+        time_2=perf_counter()
+        print('term relevance: ' + str(time_2-time_1))
+        print(self.words_to_ids_to_relevance)
+
     def write_words_file(self):
         self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
 
@@ -267,6 +282,7 @@ class Index:
     
     
     def compute_page_rank(self):
+        time_1=perf_counter()
         r_dict = {}
         n = len(self.all_page_ids)
         for id in self.all_page_ids:
@@ -278,7 +294,9 @@ class Index:
                 self.ids_to_pageRank_dict[j] = 0
                 for k in self.all_page_ids:
                     self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k]
-        print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
+        time_2=perf_counter()
+        print('pageRank : ' + str(time_2-time_1))
+        # print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
         #return self.ids_to_pageRank_dict
         #pass
 
@@ -287,14 +305,18 @@ class Index:
         #pass
     
 if __name__ == "__main__":
-    var = Index(sys.argv[1],sys.argv[2],sys.argv[3], sys.argv[4])
+    if len(sys.argv)-1:
+        var = Index(*sys.argv[1:])
+    else:
+        print('Usage: <XML filepath> <titles filepath> <docs filepath> <words filepath>')
     
 
-# # time python3 index.py our_wiki_files/test_query.xml titles.txt docs.txt words.txt
-#time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
+# # time python3 index.py wikis/MedWiki.xml 
+#time 
 # # 
+
         
 
 # var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
-# #     # python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt
+# python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
 

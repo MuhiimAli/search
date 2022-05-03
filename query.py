@@ -12,12 +12,13 @@ import re
 import sys
 
 class Query:
-    def __init__(self,page_rank: str, title_file: str, docs_file: str, words_file: str):
+
+    def __init__(self,title_file: str, docs_file: str, words_file: str):
         self.file_io = file_io
         self.title_file = title_file
         self.docs_file = docs_file
         self.words_file = words_file
-        self.page_rank = page_rank
+        # self.page_rank = page_rank
         self.ids_to_titles = {}
         self.ids_to_pageranks = {}
         self.words_to_doc_relevance = {}
@@ -65,13 +66,14 @@ class Query:
     def rank_pages(self, all_keys: list, id_total_relevance: dict):
         if len(all_keys) == 0:
             print("No search results available. Try a different search!")
-        if self.page_rank != '--pagerank':
-            all_keys.sort(key = lambda x : id_total_relevance[x], reverse = True)
+        
+        if sys.argv[1] == '--pagerank' and len(sys.argv) - 1 == 4:
+            all_keys.sort(key = lambda x : id_total_relevance[x]*self.ids_to_pageranks[x], reverse = True)
             range_x = min(10, len(all_keys))
             for x in range(range_x):
                 print(str(x+1) + ' ' + self.ids_to_titles[all_keys[x]])
         else:
-            all_keys.sort(key = lambda x : id_total_relevance[x]*self.ids_to_pageranks[x], reverse = True)
+            all_keys.sort(key = lambda x : id_total_relevance[x], reverse = True)
             range_x = min(10, len(all_keys))
             for x in range(range_x):
                 print(str(x+1) + ' ' + self.ids_to_titles[all_keys[x]])
@@ -95,11 +97,17 @@ class Query:
 
 
 if __name__ == "__main__":
+     # query = Query('--pagerank', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
+    if len(sys.argv) - 1 == 4 and  sys.argv[1] == '--pagerank':
+        query = Query(*sys.argv[2:])
+    #     query = Query(*sys.argv[1:])
+    elif len(sys.argv) - 1 !=4:
+        query = Query(*sys.argv[1:])
+    else:
+        print('Usage:[--pagerank] <titleIndex> <documentIndex> <wordIndex>')
 
-    query = Query('--pagerank', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
-#    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
-
-
+# python3 query.py --pagerank titles.txt docs.txt words.txt
+# python3 query.py titles.txt docs.txt words.txt
    
     #$ python3 query.py [--pagerank] <titleIndex> <documentIndex> <wordIndex>
     
