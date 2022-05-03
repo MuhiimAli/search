@@ -2,6 +2,7 @@ Muhiim Ali, Jennifer Chen
 
 1.Known Bugs:
     Words with apostrophes
+    numbers (2000, 1 etc) counted in the terms
 
 2. User Instructions:
 
@@ -28,6 +29,13 @@ dictionaries are populated and calculations are performed in an appropriate orde
     search or not. The querier runs a RELP that takes in and proceses queries (searches). The querier then 
     ranks documents against the queries based on term relevance and, if specified, PageRank from the index files. These index
     files are the word file, doc file, and title file. 
+
+    The query has a method for ranking pages called rank_pages that takes in a list of query words that exist in the wiki as well as a dictionary that has doc ids
+    mapped to total relevance. This dictionary that maps ids to relevance is populated in the method populate_total_relevance which takes in a list of 
+    all the unsorted query words. 
+
+    If query's rank_pages method finds that there are no words in the query search that would match to results in the wiki, an informative message
+    will be printed out that tells the user that there are no search results and that they should try a new search. 
 
 [TESTING]
 

@@ -10,9 +10,11 @@
         <text>Tulip TULIP tulip</text>
     </page>
     <page>
-        <title>no Way!</title>
+        <title>cat</title>
         <id>100</id>
         <text>[[Get Outta Here|word]]</text>
     </page>
 </xml>
        
+       <!--Expecting all links to be empty sets (in our indexer code denoting that the page is linked to everything except itself)-->
+       <!--Expected Rank: -->

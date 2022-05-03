@@ -49,7 +49,7 @@ class Query:
             
     
     def populate_total_relevance(self, query_set : list ):
-        """Populates locla id_to_total_relevance dictionary and uses local dictionary to rank pages
+        """Populates local id_to_total_relevance dictionary and uses local dictionary to rank pages
         Parameters:
         query_set -- list of words that were inputted to search
         Returns: none
@@ -67,7 +67,7 @@ class Query:
     def rank_pages(self, all_keys: list, id_total_relevance: dict):
         """Prints search results based on if pagerank is used or not
         Parameters:
-        all_keys -- list of query words
+        all_keys -- list of query words that are in the wiki
         id_total_relevance -- dictionary that maps query words to the ids of docs they appear in to their term relevance
 
         Returns:none
@@ -76,7 +76,6 @@ class Query:
         """
         if len(all_keys) == 0:
             print("No search results available. Try a different search!")
-        
         if sys.argv[1] == '--pagerank' and len(sys.argv) - 1 == 4:
             all_keys.sort(key = lambda x : id_total_relevance[x]*self.ids_to_pageranks[x], reverse = True)
             range_x = min(10, len(all_keys))

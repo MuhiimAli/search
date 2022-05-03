@@ -72,7 +72,10 @@ class Index:
             print("Empty wiki")
         for page in self.all_pages:#looping through all the pages
             page_title: str = (page.find('title').text).lower() #getting the title of each page.
-            page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
+            if page.find('text').text != None:
+                page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
+            else:
+                page_text: str = ''
             id: int = int(page.find('id').text)
             self.all_page_ids.add(id) #keeps track of all the page ids
             page_tokens = re.findall(self.tokenization_regex,page_title +' '+ page_text)
@@ -258,8 +261,8 @@ class Index:
     def euclidean_distance(self,page_rank: dict, r : dict):
         """Calculating euclidean distance for final ranking
         Parameters:
-        page_rank -- dictionary
-        r--dictionary
+        page_rank -- dictionary of ids mapped to pagerank value
+        r--dictionary that maps id
         
         Returns: Euclidean Distance"""
         r_dict = list(r.items())

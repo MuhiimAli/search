@@ -3,6 +3,7 @@ from index import Index
 from query import Query
 
 #INDEX UNIT TESTS
+
 #TESTS PARSE METHOD
 def test_parse():
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
@@ -10,10 +11,23 @@ def test_parse():
     assert index1.word_to_id_to_count == {'author': {3: 1},'categori': {2: 1},'cs200': {3: 1},'determin': {2: 1, 3: 1},'document': {1: 1, 2: 1},'gorgeou': {2: 1}, 'king': {3: 1},'list': {1: 1},'philosophi': {1: 1, 2: 1},'process': {1: 1}, 'relev': {2: 1},'scienc': {1: 1, 2: 1},'term': {1: 1, 2: 1},'xml': {3: 1},"king'": {3: 1},"xml'": {1: 1}}
     assert index1.id_to_links == {1: {2}, 2: {3}, 3: set()}
     
-    # index2 = Index()
+    index2 = Index('our_wiki_files/testingcase1.xml', 'titleCase1', 'docsCase1', 'wordsCase1')
+    assert index2.all_page_ids == {13,2,100}
+    assert index2.word_to_id_to_count == {'cat': {13: 7, 100: 1}, 'flower': {2: 1},'garden': {2: 1},'tulip': {2: 3},'word': {100: 1}}
+    assert index2.id_to_links == {13: set(), 2: set(), 100: set()}
+
+    index3 = Index('our_wiki_files/testingcase2.xml', 'titleCase2', 'docsCase2', 'wordsCase3')
+    assert index3.all_page_ids == {1, 2}
+    assert index3.word_to_id_to_count == {'merillium': {1: 4, 2: 2}, 'cool': {1: 2, 2: 1}, 'made': {1: 1}, 'underwat': {1: 1, 2: 1}, 'miner': {1: 2, 2: 1}, '2000': {1: 1}, 'go': {1: 1}, 'one': {1: 1}, 'coin': {1: 1}, 'aquamarin': {2: 1}, 'granit': {2: 1}}
+    # assert index3.id_to_l
 
 def test_handle_links():
     index1 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki', 'wordfiles/wordsSmallWiki')
+    assert index1.handle_Links('[[APPLES!]]', True) == 'APPLES!'
+    assert index1.handle_Links('[[Marry Me|chicken]]', False) == 'chicken'
+    assert index1.handle_Links('[[Marry Me|chicken]]', True) == 'Marry Me'
+    assert index1.handle_Links('{{APPLES!}}', False) == 'APPLES!'
+    assert index1.handle_Links('{{}}', True) == ''
     
 
 def test_remove_stop_words_and_stem():
@@ -43,17 +57,22 @@ def test_term_to_num_docs():
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.term_to_num_of_docs == {'philosophi': 2, 'process': 1, "xml'": 1, 'document': 2, 'list': 1, 'term': 2, 'scienc': 2, 'determin': 2, 'relev': 1, 'gorgeou': 1, 'categori': 1, 'cs200': 1, 'xml': 1, "king'": 1, 'author': 1, 'king': 1}
 
-# def test_empty_wikis():
-#     # empty = Index('our_wiki_files/emptywiki.xml', 'emptyTitles', 'emptyDocs', 'emptyWords')
-#     emptier = Index('our_wiki_files/emptierwiki.xml', 'emptierTitles', 'emptierDocs', 'emptierWords')
+def test_empty_wikis():
+    empty = Index('our_wiki_files/emptywiki.xml', 'emptyTitles', 'emptyDocs', 'emptyWords')
 
-    
+
+    emptier = Index('our_wiki_files/emptierwiki.xml', 'emptierTitles', 'emptierDocs', 'emptierWords')
+    assert emptier.title_to_page_id == {'ur mom': 1, 'ur dad': 2}
+    assert emptier.term_to_num_of_docs == {'dad': 1, 'mom': 1, 'ur': 2}
+    assert emptier.id_to_highest_freq == {1: 1, 2: 1}
+    assert emptier.ids_to_pageRank_dict == {1: pytest.approx(0.5), 2: pytest.approx(0.5)}
 
 #TEST TERM TO DOC RELEVANCE and relevance calculations
 
 def test_idf_dict():
     """This tests compute_idf in index.py"""
-    pass
+    index1 = Index('wikis/test_tf_idf.xml', 'tfidfTitles', 'tfidfDocs', 'tfidfWords')
+    assert index1.idf_dict == {'page': 0, '1': pytest.approx(1.0986, .001), 'dog': pytest.approx(0.40546, .001), 'bit': pytest.approx(0.405465, .001), 'man': pytest.approx(1.098612, .001), '2': pytest.approx(1.098612, .001), 'ate': pytest.approx(1.098612, .001), 'chees': pytest.approx(0.405465, .001), '3': pytest.approx(1.0986122, .001)}
 
 def test_words_to_ids_to_relevance():
     """Tests compute_relevance in index.py"""
@@ -67,8 +86,9 @@ def test_weights_dict():
     assert index1.weights_dict == {1: {1: pytest.approx(0.049999, .001), 2: pytest.approx(0.9, .001), 3: pytest.approx(0.04999999, .001)}, 2: {1: pytest.approx(0.04999, .001), 2: pytest.approx(0.04999, .001), 3: pytest.approx(0.9)}, 3: {1: pytest.approx(0.475), 2: pytest.approx(0.475), 3: pytest.approx(0.04999, .001)}}
 
 #testing euclidean distance for pagerank
-def test_euclidean_distance():
-    pass
+# def test_euclidean_distance():
+#     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
+#     assert index1.euclidean_distance({1: 1}, {1:0}) == 0
 
 #TESTING PAGERANK
 def test_pagerank1b_dict():
@@ -76,22 +96,24 @@ def test_pagerank1b_dict():
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.4326427),2: pytest.approx(0.2340239),3: pytest.approx(0.333333333)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
+    #Testing if Small Wiki's pagerank values sum to 1
+    pagerank2 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki','wordfiles/wordsSmallWiki')
+    assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
+    pagerank3 = Index('our_wiki_files/PageRankExample6.xml', 'pageRank6Titles', 'pageRank6Docs', 'pageRank6Words')
+    assert pagerank3.ids_to_pageRank_dict == {1: pytest.approx(0.22726, 0.001), 2: pytest.approx(0.37899, 0.001), 3: pytest.approx(0.29175, 0.001), 4: pytest.approx(0.101996, 0.001)}
+    assert sum(pagerank3.ids_to_pageRank_dict.values()) == pytest.approx(1)
+    
+    pagerank4 = Index()
+
+
 def test_pagerank5():
     pagerank = Index('our_wiki_files/PageRankExample5.xml', 'pagerank5Titles', 'pagerank5Docs', 'pagerank5Words')
     print(pagerank.ids_to_pageRank_dict.values())
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.05242, 0.001), 2: pytest.approx(0.4476, 0.001), 3: pytest.approx(0.05243, 0.001), 4: pytest.approx(0.4476, 0.001)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
 #QUERY UNIT TESTS
 def test_query1():
-    pass
-
-#SYSTEM TESTING
-# def test_system1():
-#     indexer = Index('our_wiki_files/test_query.xml', 'query1Titles', 'query1Docs', 'query1Words')
-#     query = Query('our_wiki_files/test_query.xml', 'query1Titles', 'query1Docs', 'query1Words')
+    query1 = Query('--pagerank', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     
-
-#what should the diff be?^
-
-#system pagerank test
-#system relevance test
