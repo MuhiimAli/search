@@ -259,20 +259,18 @@ class Index:
                     self.weights_dict[j][k] = e/n
 
     def euclidean_distance(self,page_rank: dict, r : dict):
-        """Calculating euclidean distance for final ranking
+        """Helper method calculating euclidean distance for final ranking
         Parameters:
         page_rank -- dictionary of ids mapped to pagerank value
-        r--dictionary that maps id
+        r-- dictionary that maps ids to pagerank value
         
         Returns: Euclidean Distance"""
-        r_dict = list(r.items())
-        page_rank_dict = list(page_rank.items())
-        #converting dictionary to an array
-        r_array= np.array(r_dict)
+        r_dict = list(r.items()) #getting the KV pairs and storing in tuple
+        page_rank_dict = list(page_rank.items()) 
+        r_array= np.array(r_dict) #converting dictionary to an array
         page_rank_array = np.array(page_rank_dict)
-        dist = np.sqrt(np.sum(np.square(r_array-page_rank_array)))
+        dist = np.sqrt(np.sum(np.square(r_array-page_rank_array))) #computing euclidean distance
         return dist
-
     
     
     def compute_page_rank(self):
@@ -282,15 +280,16 @@ class Index:
         """
         r_dict = {}
         n = len(self.all_page_ids)
+        delta = 0.001
         for id in self.all_page_ids:
             r_dict[id] = 0   #initializes every rank in r to be 0
             self.ids_to_pageRank_dict[id] = 1/n #initializes every rank in r' to be 1/n
-        while self.euclidean_distance(self.ids_to_pageRank_dict,r_dict) > 0.001: #while loop runs and populates ids_to_pagerank_dict until the rank computation converges sufficiently
-            r_dict = self.ids_to_pageRank_dict.copy()
-            for j in self.all_page_ids:
-                self.ids_to_pageRank_dict[j] = 0
+        while self.euclidean_distance(self.ids_to_pageRank_dict,r_dict) > delta: #while loop runs and populates ids_to_pagerank_dict until the rank computation converges sufficiently
+            r_dict = self.ids_to_pageRank_dict.copy() #setting r dict to be the current pagerank dict
+            for j in self.all_page_ids: #looping through page ids
+                self.ids_to_pageRank_dict[j] = 0 
                 for k in self.all_page_ids:
-                    self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k] 
+                    self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k] #computing rank
 
     def write_docs_file(self):
         """Once we have the ranking values of our docs we can create and write the docs file"""
@@ -298,6 +297,7 @@ class Index:
 
     
 if __name__ == "__main__":
+    """Main method"""
     if len(sys.argv)-1:
         var = Index(*sys.argv[1:])
     else:
