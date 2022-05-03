@@ -1,6 +1,4 @@
 import math
-from time import perf_counter
-#from time import perf_counter
 import xml.etree.ElementTree as et
 import file_io
 from nltk.corpus import stopwords
@@ -32,24 +30,22 @@ class Index:
         self.words_file = words_file
         self.tokenization_regex = '''\[\[[^\[]+?\]\]|[a-zA-Z0-9]+'[a-zA-Z0-9]+|[a-zA-Z0-9]+'''
         self.link_regex = '''\[\[[^\[]+?\]\]'''
-        #self.word_corpus = set()
         wiki_tree = et.parse(self.xml_file) #loads the xml file into a tree
         root = wiki_tree.getroot()#get the root of the tree
         self.all_pages = root.findall('page')#this gets all the pages
         self.file_io = file_io
-       # self.populate_ids_to_titles()
-        self.word_to_id_to_count = {} 
-        self.all_page_ids = set()
-        self.weights_dict = {} #creating weights dict
+        self.word_to_id_to_count = {} #dictinary mapping words to doc ids to the amount of times a word appears in that specific doc
+        self.all_page_ids = set() #set of all page ids
+        self.weights_dict = {} #instantiating weights_dict which is a double dictionary that maps a doc id to another doc id which maps to the weight between the external doc id and the internal doc id
         self.id_to_links = defaultdict(set)
-        self.title_to_page_id = {}
-        self.ids_to_titles = {}
-        self.id_to_highest_freq = {}
-        self.term_to_num_of_docs= {}
-        self.idf_dict = {}
-        self.words_to_ids_to_relevance= {}
-        self.tf_dict= {}
-        self.ids_to_pageRank_dict= {}
+        self.title_to_page_id = {} #dictionary mapping page title to its id
+        self.ids_to_titles = {} #dictionary mapping page id to its title
+        self.id_to_highest_freq = {} #dictionary mapping a doc id to the number of occurances of the term with the highest frequency in the doc
+        self.term_to_num_of_docs= {} #dictionary mapping each term to the number of documents it appears in
+        self.idf_dict = {} #dictionary mapping word to its idf
+        self.words_to_ids_to_relevance= {} #dictionary mapping words to internal dict of the ids of the docs it appears in mapped to the relevance score
+        self.tf_dict= {} #dictionary mapping word/term to an internal dictionary that maps doc ids that the word appears in to the term frequency of the word in the specific doc
+        self.ids_to_pageRank_dict= {} #dictionary mapping doc ids to its pagerank score 
         self.populate_title_page_id()
         self.parse()
         self.populate_weights_dict()
@@ -72,9 +68,12 @@ class Index:
         Parameters:
         Returns:
         """
+        if len(self.all_pages) == 0:
+            print("Empty wiki")
         for page in self.all_pages:#looping through all the pages
-            page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
             page_title: str = (page.find('title').text).lower() #getting the title of each page.
+            print(page.find('text'))
+            page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
             id: int = int(page.find('id').text)
             self.all_page_ids.add(id) #keeps track of all the page ids
             page_tokens = re.findall(self.tokenization_regex,page_title +' '+ page_text)
@@ -188,89 +187,90 @@ class Index:
                     self.id_to_highest_freq[id] = 0
                 self.id_to_highest_freq[id] = max(self.id_to_highest_freq[id],\
                     self.word_to_id_to_count[word][id]) #mapping id to the highest frequency by comparing the value that the id is currently mapped to to the count of the current word
-        #print(self.id_to_highest_freq)
-        #return id_to_highest_freq
+        
         
         
     def compute_idf(self):
-        time_1=perf_counter()
-        n = len(self.all_pages)
-        words= self.word_to_id_to_count.keys()#all the words in the corpus
-        for word in words:
-            n_i = self.term_to_num_of_docs[word]
-            self.idf_dict[word] = math.log(n/n_i)
-        time_2=perf_counter()
-        print('idf : ' + str(time_2-time_1))
-
-
-        #return idf_dict
-        # print(self.idf_dict)
+        """"Computing the idf of a word and populating idf_dict
+        Parameters: none
+        Returns: none
+        """
+        n = len(self.all_pages) #counting how many pages there are in total
+        words= self.word_to_id_to_count.keys()#all the words in the dictionary
+        for word in words: #looping through each word
+            n_i = self.term_to_num_of_docs[word] #extracting and storing the number of documents a word appears in
+            self.idf_dict[word] = math.log(n/n_i) #calculating idf and mapping word to idf in idf_dict
 
     
     def compute_term_frequency(self):
-        time_1=perf_counter()
-        words= self.word_to_id_to_count.keys()
-        for word in words:
-            ids = self.word_to_id_to_count[word].keys()
-            if  word not in self.tf_dict:
+        """Calculates term frequency and populates tf_dict
+        Param: none
+        Returns: none
+        """
+        words= self.word_to_id_to_count.keys() #obtains all words that appear in documents
+        for word in words: #looping through each word
+            ids = self.word_to_id_to_count[word].keys() #obtains all ids of the docs that the current word appears in
+            if  word not in self.tf_dict: 
                 self.tf_dict[word]= {}
             for id in ids:
                 if id not in self.tf_dict[word]:
                     self.tf_dict[word][id]= 0
                 term_frequency = self.word_to_id_to_count[word][id]
                 self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
-        time_2=perf_counter()
-        print('term_frequency : ' + str(time_2-time_1))
-        #return tf_dict
-    
-    
+
     def compute_term_relevance(self):
-        time_1=perf_counter()
-        words=self.word_to_id_to_count.keys()
+        """Computes term relevance and populating words_to_ids_to_relevance dict
+        Param: none
+        Returns: none
+        """
+        words=self.word_to_id_to_count.keys() #obtaining all words that appear in a document
         for word in words:
-            ids = self.word_to_id_to_count[word].keys()
+            ids = self.word_to_id_to_count[word].keys() #obtaining the ids of docs that the word appears in
             if word not in self.words_to_ids_to_relevance:
                 self.words_to_ids_to_relevance[word] = {}
             for id in ids:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
-                self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id]
-        time_2=perf_counter()
-        print('term relevance: ' + str(time_2-time_1))
-        print(self.words_to_ids_to_relevance)
-
+                self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id] #calculating term freq and mapping the internal dict doc id to term frequency
     def write_words_file(self):
+        """Once we have term frequency and words_to_ids_to_relevance dict populated, the words file can be created
+        Param: none
+        Returns: none"""
         self.file_io.write_words_file(self.words_file, self.words_to_ids_to_relevance)
-
-
     
-    
-    def populate_weights_dict(self): #populating weights_dict
-        n = len(self.all_page_ids)
-        e = 0.15
+    def populate_weights_dict(self):
+        """Calculating weights and populating weights_dict
+        Param: none 
+        Returns: none
+        """
+        n = len(self.all_page_ids) #obtaining the amount of pages in wiki
+        e = 0.15 #instantiating e
         for j in self.all_page_ids: #looping thru all ids
-            if j not in self.weights_dict:
+            if j not in self.weights_dict: #mapping current id to internal dictionary
                 self.weights_dict[j] = {}
-            for k in self.all_page_ids:
+            for k in self.all_page_ids: #looping through all ids again, followed are cases comparing docs
                 if k not in self.weights_dict[j]:
                     self.weights_dict[j][k] = {}
-                if j == k:
+                if j == k: #case calculating/mapping the weight when a doc is linked to itself
                     self.weights_dict[j][k] = e/n
-                elif k in self.id_to_links[j]: 
+                elif k in self.id_to_links[j]: #calculating/mapping weight if j is liked to k
                     nk= len(self.id_to_links[j])
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
-                elif  self.id_to_links[j] == set():
+                elif  self.id_to_links[j] == set():#calculating/mapping weight if j is not linked to anything
                     nk = n-1
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
-                else:
+                else: #calculating/mapping weight if any other case
                     self.weights_dict[j][k] = e/n
 
-      
-      
-        #print(self.weights_dict)
     
 
     def euclidean_distance(self,page_rank: dict, r : dict):
+        """Calculating euclidean distance for final ranking
+        Parameters:
+        page_rank -- dictionary
+        r--dictionary
+        
+        Returns: Euclidean Distance"""
         r_dict = list(r.items())
         page_rank_dict = list(page_rank.items())
         #converting dictionary to an array
@@ -282,7 +282,10 @@ class Index:
     
     
     def compute_page_rank(self):
-        time_1=perf_counter()
+        """Computes PageRank values and populates ids_to_pageRank_dict
+        Param: none
+        Returns: none
+        """
         r_dict = {}
         n = len(self.all_page_ids)
         for id in self.all_page_ids:
@@ -294,15 +297,11 @@ class Index:
                 self.ids_to_pageRank_dict[j] = 0
                 for k in self.all_page_ids:
                     self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k]
-        time_2=perf_counter()
-        print('pageRank : ' + str(time_2-time_1))
-        # print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
-        #return self.ids_to_pageRank_dict
-        #pass
 
     def write_docs_file(self):
+        """Once we have the ranking values of our docs we can create and write the docs file"""
         self.file_io.write_docs_file(self.docs_file,self.ids_to_pageRank_dict)
-        #pass
+
     
 if __name__ == "__main__":
     if len(sys.argv)-1:
