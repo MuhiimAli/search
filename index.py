@@ -1,5 +1,4 @@
 import math
-
 import xml.etree.ElementTree as et
 import file_io
 from nltk.corpus import stopwords
@@ -58,19 +57,21 @@ class Index:
         self.write_docs_file()
         self.write_words_file()
         self.write_title_file()
+       
+
+
     
         
    
     def parse(self):
-        """Parses the inputted xml file
-        Parameters:
-        Returns:
+        """Parses the inputted xml file, populates id_to_links, calls populate_word_to_ids_to_counts to populate word_to_ids_to_counts dict
+        Parameters: none
+        Returns:none
         """
         if len(self.all_pages) == 0:
             print("Empty wiki")
         for page in self.all_pages:#looping through all the pages
             page_title: str = (page.find('title').text).lower() #getting the title of each page.
-            print(page.find('text'))
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
             id: int = int(page.find('id').text)
             self.all_page_ids.add(id) #keeps track of all the page ids
@@ -89,9 +90,6 @@ class Index:
                 else: #if the word is not a link
                     processed_link_text= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_to_counts(processed_link_text, id)
-
-        #print(self.word_corpus)
-        print(self.id_to_links)
 
    #populating both title title_to_page_id and ids_to_titles at the same time increases efficiency as we don't have to loop through the pages twice for both dict
     def populate_title_page_id(self): 
@@ -149,7 +147,6 @@ class Index:
         """
         if term not in STOP_WORDS: #if the word is not a stop word, the word is stemmed
             processed_word = nltk_test.stem(term)
-            #self.word_corpus.add(processed_word)
             return processed_word
 
     def populate_word_to_ids_to_counts(self, word_stem: str, id : int):
@@ -215,9 +212,7 @@ class Index:
                     self.tf_dict[word][id]= 0
                 term_frequency = self.word_to_id_to_count[word][id]
                 self.tf_dict[word][id]=term_frequency/self.id_to_highest_freq[id]
-       
-    
-    
+
     def compute_term_relevance(self):
         """Computes term relevance and populating words_to_ids_to_relevance dict
         Param: none
@@ -232,7 +227,6 @@ class Index:
                 if id not in self.words_to_ids_to_relevance[word]:
                     self.words_to_ids_to_relevance[word][id] = 0
                 self.words_to_ids_to_relevance[word][id]= self.idf_dict[word] * self.tf_dict[word][id] #calculating term freq and mapping the internal dict doc id to term frequency
-    
     def write_words_file(self):
         """Once we have term frequency and words_to_ids_to_relevance dict populated, the words file can be created
         Param: none
@@ -250,8 +244,6 @@ class Index:
             if j not in self.weights_dict: #mapping current id to internal dictionary
                 self.weights_dict[j] = {}
             for k in self.all_page_ids: #looping through all ids again, followed are cases comparing docs
-                if k not in self.weights_dict[j]:
-                    self.weights_dict[j][k] = {}
                 if j == k: #case calculating/mapping the weight when a doc is linked to itself
                     self.weights_dict[j][k] = e/n
                 elif k in self.id_to_links[j]: #calculating/mapping weight if j is liked to k
@@ -262,8 +254,6 @@ class Index:
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
                 else: #calculating/mapping weight if any other case
                     self.weights_dict[j][k] = e/n
-
-    
 
     def euclidean_distance(self,page_rank: dict, r : dict):
         """Calculating euclidean distance for final ranking
@@ -292,14 +282,12 @@ class Index:
         for id in self.all_page_ids:
             r_dict[id] = 0   #initializes every rank in r to be 0
             self.ids_to_pageRank_dict[id] = 1/n #initializes every rank in r' to be 1/n
-        while self.euclidean_distance(self.ids_to_pageRank_dict,r_dict) > 0.001:
+        while self.euclidean_distance(self.ids_to_pageRank_dict,r_dict) > 0.001: #while loop runs and populates ids_to_pagerank_dict until the rank computation converges sufficiently
             r_dict = self.ids_to_pageRank_dict.copy()
             for j in self.all_page_ids:
                 self.ids_to_pageRank_dict[j] = 0
                 for k in self.all_page_ids:
-                    self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k]
-        print('ids_to_pageRank' + str(self.ids_to_pageRank_dict))
-        
+                    self.ids_to_pageRank_dict[j] = self.ids_to_pageRank_dict[j] + self.weights_dict[k][j] * r_dict[k] 
 
     def write_docs_file(self):
         """Once we have the ranking values of our docs we can create and write the docs file"""
@@ -307,14 +295,9 @@ class Index:
 
     
 if __name__ == "__main__":
-    var = Index(sys.argv[1],sys.argv[2],sys.argv[3], sys.argv[4])
+    if len(sys.argv)-1:
+        var = Index(*sys.argv[1:])
+    else:
+        print('Usage: <XML filepath> <titles filepath> <docs filepath> <words filepath>')
     
-
-# # time python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
-#time python3 index.py our_wiki_files/test_word_relevance_2.xml titles.txt docs.txt words.txt
-# # 
-        
-
-# var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
-# #     # python3 index.py wikis/SmallWiki.xml titles.txt docs.txt words.txt
 
