@@ -13,12 +13,13 @@ import sys
 
 class Query:
     def __init__(self,page_rank: str, title_file: str, docs_file: str, words_file: str):
+        """Main method for query"""
         self.file_io = file_io
         self.title_file = title_file
         self.docs_file = docs_file
         self.words_file = words_file
         self.page_rank = page_rank
-        self.ids_to_titles = {}
+        self.ids_to_titles = {} 
         self.ids_to_pageranks = {}
         self.words_to_doc_relevance = {}
         self.read_title_file()
@@ -34,6 +35,7 @@ class Query:
         self.file_io.read_words_file(self.words_file, self.words_to_doc_relevance)
    
     def repl(self):
+        """Repl method"""
         while True:
             query_set = set()
             user_input = input('search> ')
@@ -47,11 +49,13 @@ class Query:
                     query_set.add(processed_word)
             self.populate_total_relevance(query_set)
             
-            
-                
-
     
     def populate_total_relevance(self, query_set : list ):
+        """Populates locla id_to_total_relevance dictionary and uses local dictionary to rank pages
+        Parameters:
+        query_set -- list of words that were inputted to search
+        Returns: none
+        """
         id_total_relevance = {}
         for query_word in query_set:
             if query_word in self.words_to_doc_relevance:
@@ -63,6 +67,15 @@ class Query:
         self.rank_pages(all_keys, id_total_relevance)
 
     def rank_pages(self, all_keys: list, id_total_relevance: dict):
+        """Prints search results based on if pagerank is used or not
+        Parameters:
+        all_keys -- list of query words
+        id_total_relevance -- dictionary that maps query words to the ids of docs they appear in to their term relevance
+
+        Returns:none
+
+        Side Effects: produces an informative message if the search produces no results
+        """
         if len(all_keys) == 0:
             print("No search results available. Try a different search!")
         if self.page_rank != '--pagerank':
