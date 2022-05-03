@@ -91,24 +91,13 @@ class Query:
             
             
                     
-        
-
-
-
-
-
-
-
-
-
-
-
+    
 
 
 
 
 if __name__ == "__main__":
-    query = Query('--pagerank', 'titlefiles/query1Titles', 'docfiles/query1Docs', 'wordfiles/query1Words')
+    query = Query('--pagerank', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki', 'wordfiles/wordsSmallWiki')
 #    query = Query(sys.argv[1],sys.argv[2],sys.argv[3],sys.argv[4])
 
 
