@@ -72,7 +72,6 @@ class Index:
             print("Empty wiki")
         for page in self.all_pages:#looping through all the pages
             page_title: str = (page.find('title').text).lower() #getting the title of each page.
-            print(page.find('text'))
             page_text: str = (page.find('text').text).lower() #getting the text of each page (as a str)
             id: int = int(page.find('id').text)
             self.all_page_ids.add(id) #keeps track of all the page ids
@@ -91,9 +90,6 @@ class Index:
                 else: #if the word is not a link
                     processed_link_text= self.remove_stop_words_and_stem(term)
                     self.populate_word_to_ids_to_counts(processed_link_text, id)
-
-        #print(self.word_corpus)
-        #print(self.id_to_links)
 
    #populating both title title_to_page_id and ids_to_titles at the same time increases efficiency as we don't have to loop through the pages twice for both dict
     def populate_title_page_id(self): 
@@ -151,7 +147,6 @@ class Index:
         """
         if term not in STOP_WORDS: #if the word is not a stop word, the word is stemmed
             processed_word = nltk_test.stem(term)
-            #self.word_corpus.add(processed_word)
             return processed_word
 
     def populate_word_to_ids_to_counts(self, word_stem: str, id : int):
@@ -249,8 +244,6 @@ class Index:
             if j not in self.weights_dict: #mapping current id to internal dictionary
                 self.weights_dict[j] = {}
             for k in self.all_page_ids: #looping through all ids again, followed are cases comparing docs
-                if k not in self.weights_dict[j]:
-                    self.weights_dict[j][k] = {}
                 if j == k: #case calculating/mapping the weight when a doc is linked to itself
                     self.weights_dict[j][k] = e/n
                 elif k in self.id_to_links[j]: #calculating/mapping weight if j is liked to k
@@ -261,8 +254,6 @@ class Index:
                     self.weights_dict[j][k] = e/n + (1-e)*1/nk
                 else: #calculating/mapping weight if any other case
                     self.weights_dict[j][k] = e/n
-
-    
 
     def euclidean_distance(self,page_rank: dict, r : dict):
         """Calculating euclidean distance for final ranking
@@ -309,13 +300,4 @@ if __name__ == "__main__":
     else:
         print('Usage: <XML filepath> <titles filepath> <docs filepath> <words filepath>')
     
-
-# # time python3 index.py wikis/MedWiki.xml 
-#time 
-# # 
-
-        
-
-# var = Index('wikis/MedWiki.xml', 'titles.txt','docs.txt', 'words.txt')
-# python3 index.py wikis/MedWiki.xml titles.txt docs.txt words.txt
 
