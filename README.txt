@@ -49,6 +49,11 @@ Tests were made by creating an insance of Index and texting if the dictionaries 
 
     [INDEX.PY]
 
+
+Tests not included in test_system:
+
+    Testing FileNotFoundException:
+        When 
     [QUERY.PY]
 
 6.System Testing:

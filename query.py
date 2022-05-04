@@ -80,7 +80,6 @@ class Query:
         if len(all_keys) == 0:
             print("No search results available. Try a different search!")
         if sys.argv[1] == '--pagerank' and len(sys.argv) - 1 == 4: #if the first argument is pagerank and the number of arguments is 4, then pagerank shuld be enabled
-            #ask if we need to check the num of arguments here if we do it in main  method JEN JEN JEN 
             all_keys.sort(key = lambda x : id_total_relevance[x]*self.ids_to_pageranks[x], reverse = True) #sorting page ids based on their rank times total relevance, sorting from greatest to least value
             range_x = min(10, len(all_keys)) #setting the range of how many page results are printed
             for x in range(range_x): #looping through each page slot in the range
