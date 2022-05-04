@@ -122,6 +122,14 @@ def test_smallWiki_dict():
     pagerank2 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki.txt','wordfiles/wordsSmallWiki.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
+def test_medWiki_dict():
+    pagerank2 = Index('wikis/MedWiki.xml', 'MedWikiTitles.txt', 'MedWikiDocs.txt','MedWikiWords.txt')
+    assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
+def test_bigWiki_dict():
+    pagerank2 = Index('wikis/BigWiki.xml', 'BigWikiTitles.txt', 'BigWikiDocs.txt','BigWikiWords.txt')
+    assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
 def test_pagerank2():
     pagerank2 = Index('wikis/PageRankExample2.xml', 'titlefiles/pagerank2Titles.txt', 'docfiles/pagerank2Docs.txt', 'wordfiles/pagerank2Words.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
