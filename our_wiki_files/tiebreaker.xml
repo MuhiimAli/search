@@ -1,0 +1,20 @@
+<xml>
+    <page>
+        <title>tiebreaker</title>
+        <id>1</id>
+        <text>major</text>
+    </page>
+    <page>
+        <title>tiebreaker second</title>
+        <id>2</id>
+        <text>major minor</text>
+    </page>
+    <page>
+        <title>tiebreaker third</title>
+        <id>3</id>
+        <text>major minor manor</text>
+    </page>
+</xml>
+       
+       <!--If the total relevance (idf * tf) are the same for two or more pages-->
+       

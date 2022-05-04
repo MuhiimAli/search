@@ -46,7 +46,9 @@ dictionaries are populated and calculations are performed in an appropriate orde
 Tests were made by creating an insance of Index and texting if the dictionaries and methods were outputting properly. 
 
 
-4.Extra/Unimplemented Features: None
+4.Extra/Unimplemented Features: 
+
+    If there is a tie between documents, the search results outputs/ranks the document with the lower id value first.
 
 5.Unit Testing:
 
@@ -61,7 +63,11 @@ Tests not included in test_system:
     
 
 6. System Testing:
+----Test Invalid Number of Arguments in Query----------
+In the terminal, type: python3 query.py docfiles/emptyDocs.txt wordfiles/emptyWords.txt
+Returns: Usage:[--pagerank] <titleIndex> <documentIndex> <wordIndex>
 
+This notifies the user to use the appropriate format and input the correct number and type of arguments.
 -------Test FileNotFoundError------
 
 In the terminal, type: python3 index.py wikis/nonexistantWiki.xml nonexistTitles.txt nonexistDocs.txt nondexistWords.txt
@@ -82,7 +88,43 @@ to txt docs for indexing the parsing.xml file.
 In terminal, type:  python3 index.py our_wiki_files/parsing.xml titlefiles/titlesparsing.txt docfiles/docsParsing.txt wordfiles/wordsparsing.txt
 Side effect: After running the above index call, this index call 'reverses' the last one by rewriting the appropriate parsing.xml files 
 
+----Test breaking ties------
+WITH PAGERANK
+In the terminal, type: python3 query.py --pagerank titlefiles/tiebreakerTitles.txt docfiles/tiebreakerDocs.txt wordfiles/tiebreakerWords.txt
 
+    INPUT:major
+    RESULTS:
+    1 tiebreaker
+    2 tiebreaker second
+    3 tiebreaker third
+
+    INPUT:minor
+    RESULTS:
+    1 tiebreaker second
+    2 tiebreaker third
+
+    INPUT: manor 
+    RESULTS:
+    1 tiebreaker third
+
+WITHOUT PAGERANK
+In the terminal, type: python3 query.py titlefiles/tiebreakerTitles.txt docfiles/tiebreakerDocs.txt wordfiles/tiebreakerWords.txt
+
+    INPUT:major
+    RESULTS:
+    1 tiebreaker
+    2 tiebreaker second
+    3 tiebreaker third
+
+    INPUT:minor
+    RESULTS:
+    1 tiebreaker second
+    2 tiebreaker third
+
+    INPUT: manor 
+    RESULTS:
+    1 tiebreaker third
+    
 ----Test empty wiki---- #tests a wiki with no pages
 
 WITH PAGERANK
@@ -132,6 +174,7 @@ In the terminal, type: python3 query.py titlefiles/emptyTitles.txt docfiles/empt
 
     INPUT: :quit
     RESULTS: exits out of search
+
 ---------Test emptier wiki------- #tests wiki with pages and titles but no text
 
 WITH PAGERANK
@@ -304,6 +347,47 @@ In the terminal, type: python3 query.py titlefiles/query1Titles.txt docfiles/que
     INPUT: :quit
     RESULTS: exits out of search
 
+-------Test testingcase1.xml-----
+WITH PAGERANK
+In the terminal, type: python3 query.py --pagerank titlefiles/titleCase1.txt docfiles/docsCase1.txt wordfiles/wordsCase1.txt
+
+    INPUT: cat
+    RESULTS:
+    1 how are you?
+    2 cat
+
+    INPUT: cats in tulips
+    RESULTS:
+    1 flower garden
+    2 how are you?
+    3 cat
+
+    INPUT: word
+    RESULTS:
+    1 cat
+
+    INPUT: Here
+    RESULTS: No search results available. Try a different search!
+
+WITHOUT PAGERANK
+In the terminal, type: python3 query.py titlefiles/titleCase1.txt docfiles/docsCase1.txt wordfiles/wordsCase1.txt
+
+    INPUT: cat
+    RESULTS:
+    1 how are you?
+    2 cat   
+
+    INPUT: which cat do you like?
+    RESULTS:
+
+    INPUT: word
+    RESULTS:
+    1 cat
+
+    INPUT: Here
+    RESULTS:
+    No search results available. Try a different search!
+
 -------Test testingcase2.xml-----
     WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/titleCase2.txt docfiles/docsCase2.txt wordfiles/wordsCase2.txt
@@ -335,7 +419,7 @@ In the terminal, type: python3 query.py --pagerank titlefiles/titleCase2.txt doc
     INPUT: :quit
     RESULTS: exits out of search
 
-WITHOUT PAGERANK
+    WITHOUT PAGERANK
 In the terminal, type: python3 query.py titlefiles/titleCase2.txt docfiles/docsCase2.txt wordfiles/wordsCase2.txt
     INPUT: merillium
     RESULTS: 
@@ -377,3 +461,309 @@ WITHOUT PAGERANK
     2 philosophy
     3 science
 
+----Testing SmallWiki-------
+WITH PAGERANK
+In the terminal, type: python3 query.py --pagerank titlefiles/titlesSmallWiki.txt docfiles/docsSmallWiki.txt wordfiles/wordsSmallWiki.txt
+
+    INPUT: is history really what we think it is?
+    RESULTS:
+    1 carthage
+    2 history
+    3 military history
+    4 intellectual history
+    5 psychohistory
+    6 utica, tunisia
+    7 ash heap of history
+    8 chronology
+    9 war
+    10 rome
+
+    INPUT: 2000
+    RESULTS:
+    1 united states
+    2 rome
+    3 protoscholasticism
+    4 germany
+    5 history
+    6 tertullian
+    7 military history
+    8 anachronism
+    9 war
+    10 intellectual history
+
+WITHOUT PAGERANK
+In the terminal, type: python3 query.py titlefiles/titlesSmallWiki.txt docfiles/docsSmallWiki.txt wordfiles/wordsSmallWiki.txt
+
+    INPUT: is history really what we think it is?
+    RESULTS:
+    1 carthago delenda est
+    2 intellectual history
+    3 psychohistory
+    4 outline of history
+    5 historicity (philosophy)
+    6 ash heap of history
+    7 popular history
+    8 history
+    9 list of historical classifications
+    10 local history
+
+    INPUT: 2000
+    RESULTS:
+    1 protoscholasticism
+    2 anachronism
+    3 united states
+    4 effects of war
+    5 list of wartime cross-dressers
+    6 conflict resource
+    7 military history
+    8 intellectual history
+    9 antiquarian
+    10 germany
+
+----Testing MedWiki-----
+
+WITH PAGERANK
+In the terminal, type: python3 query.py --pagerank MedWikiTitles.txt MedWikiDocs.txt MedWikiWords.txt
+
+    INPUT: fire
+    RESULTS: 
+    1 firewall (construction)
+    2 empress suiko
+    3 justin martyr
+    4 hephaestus
+    5 pale fire
+    6 new amsterdam
+    7 falklands war
+    8 hermann g?ring
+    9 guam
+    10 parmenides
+
+    INPUT: cats
+    RESULTS: 
+    1 netherlands
+    2 pakistan
+    3 morphology (linguistics)
+    4 northern mariana islands
+    5 kattegat
+    6 hong kong
+    7 normandy
+    8 isle of man
+    9 kiritimati
+    10 grammatical gender
+
+    INPUT: United States
+    RESULTS: 
+    1 netherlands
+    2 ohio
+    3 illinois
+    4 michigan
+    5 federated states of micronesia
+    6 pakistan
+    7 government
+    8 monarch
+    9 imperial units
+    10 louisiana
+
+    INPUT: united
+    RESULTS:
+    1 imperial units
+    2 netherlands
+    3 pakistan
+    4 inch
+    5 joule
+    6 franklin d. roosevelt
+    7 ohio
+    8 portugal
+    9 illinois
+    10 oregano 
+
+    INPUT: watch
+    RESULTS:
+    1 international criminal court
+    2 luanda
+    3 nail (fastener)
+    4 fahrenheit 451
+    5 meher baba
+    6 joseph stalin
+    7 martin waldseem?ller
+    8 shock site
+    9 meditation
+    10 kraftwerk 
+
+    INPUT: pope
+    RESULTS:
+    1 pope
+    2 pope urban vi
+    3 monarch
+    4 pope paul vi
+    5 pope gregory viii
+    6 pope clement iii
+    7 pope alexander iv
+    8 pope benedict iii
+    9 pope gregory v
+    10 pope gregory xiv
+
+    INPUT: battle
+    RESULTS:
+    1 navy
+    2 nazi germany
+    3 portugal
+    4 netherlands
+    5 monarch
+    6 falklands war
+    7 normandy
+    8 paolo uccello
+    9 history of the netherlands
+    10 mesolithic
+
+    INPUT: search
+    RESULTS:
+    1 pope
+    2 empress jit?
+    3 netherlands
+    4 empress suiko
+    5 planet
+    6 new amsterdam
+    7 george berkeley
+    8 hinduism
+    9 mercury (planet)
+    10 meher baba
+
+    INPUT: computer science 
+    RESULTS: 
+    1 graphical user interface
+    2 portugal
+    3 ontology
+    4 magnetosphere
+    5 j?rgen habermas
+    6 planet
+    7 junk science
+    8 mercury (planet)
+    9 john von neumann
+    10 immunology
+
+    INPUT: :quit
+    RESULTS: exits out of search
+
+WITHOUT PAGERANK
+In the terminal, type: python3 query.py MedWikiTitles.txt MedWikiDocs.txt MedWikiWords.txt
+    
+    INPUT: fire
+    RESULTS: 
+    1 firewall (construction)
+    2 pale fire
+    3 ride the lightning
+    4 g?tterd?mmerung
+    5 fsb
+    6 keiretsu
+    7 hephaestus
+    8 kab-500kr
+    9 izabella scorupco
+    10 justin martyr
+
+    INPUT: cats
+    RESULTS: 
+    1 kattegat
+    2 kiritimati
+    3 morphology (linguistics)
+    4 northern mariana islands
+    5 lynx
+    6 freyja
+    7 politics of lithuania
+    8 isle of man
+    9 nirvana (uk band)
+    10 autosomal dominant polycystic kidney
+
+    INPUT: United States
+    RESULTS: 
+    1 federated states of micronesia
+    2 imperial units
+    3 joule
+    4 knowledge aided retrieval in activity context
+    5 imperialism in asia
+    6 elbridge gerry
+    7 martin van buren
+    8 pennsylvania
+    9 finite-state machine
+    10 louisiana
+
+    INPUT: united
+    RESULTS:
+    1 imperial units
+    2 joule
+    3 gauss (unit)
+    4 imperialism in asia
+    5 knowledge aided retrieval in activity context
+    6 inch
+    7 elbridge gerry
+    8 fsb
+    9 martin van buren
+    0 los angeles international airport
+
+    INPUT: watch
+    RESULTS:
+    1 shock site
+    2 martin waldseem?ller
+    3 g?tterd?mmerung
+    4 fahrenheit 451
+    5 prometheus award
+    6 kraftwerk
+    7 mandy patinkin
+    8 nirvana (uk band)
+    9 gregory chaitin
+    10 luanda   
+
+    INPUT: pope
+    RESULTS:
+    1 pope alexander iv
+    2 pope benedict iii
+    3 pope clement iii
+    4 pope gregory v
+    5 pope gregory viii
+    6 pope gregory xiv
+    7 pope formosus
+    8 pope eugene ii
+    9 pope alexander viii
+    10 pope
+
+    INPUT: battle
+    RESULTS:
+    1 paolo uccello
+    2 j.e.b. stuart
+    3 navy
+    4 heart of oak
+    5 irish mythology
+    6 oda nobunaga
+    7 front line
+    8 girolamo aleandro
+    9 mehmed ii
+    10 lorica segmentata
+
+    INPUT: search
+    RESULTS:
+    1 natasha stott despoja
+    2 kaluza?klein theory
+    3 eth
+    4 php-nuke
+    5 gopher (protocol)
+    6 isa (disambiguation)
+    7 lorisidae
+    8 geocaching
+    9 library reference desk
+    10 demographics of liberia
+
+    INPUT: computer science 
+    RESULTS: 
+    1 leo (computer)
+    2 pcp
+    3 junk science
+    4 hacker (term)
+    5 malware
+    6 gary kildall
+    7 motherboard
+    8 foonly
+    9 pvc (disambiguation)
+    10 graphical user interface
+
+    INPUT: :quit
+    RESULTS: exits out of search
