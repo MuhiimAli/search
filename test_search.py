@@ -142,8 +142,10 @@ def test_pagerank5():
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.05242, 0.001), 2: pytest.approx(0.4476, 0.001), 3: pytest.approx(0.05243, 0.001), 4: pytest.approx(0.4476, 0.001)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
-#QUERY UNIT TESTS
-# def test_query1():
-#     query1 = Query('--pagerank', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
+# QUERY UNIT TESTS
+def test_query1():
+    query1 = Query(False, 'titlefiles/titlesParsing.txt', 'docfiles/docsParsing.txt', 'wordfiles/wordsParsing.txt')
+    assert query1.ids_to_titles == {1: 'philosophy', 2: 'science', 3: 'cs200'}
+    assert query1.ids_to_pageranks == {1: pytest.approx(0.214862), 2: pytest.approx(0.3972272), 3: pytest.approx(0.3879107)}
 
     

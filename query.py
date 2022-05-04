@@ -11,7 +11,7 @@ import re
 import sys
 
 class Query:
-    def __init__(self, title_file: str, docs_file: str, words_file: str):
+    def __init__(self, page_rank: bool, title_file: str, docs_file: str, words_file: str):
         """Constructor for query"""
         self.file_io = file_io
         self.title_file = title_file
@@ -23,7 +23,6 @@ class Query:
         self.read_title_file()
         self.read_docs_file()
         self.read_words_file()
-        self.repl()
     
     def read_title_file(self):
         self.file_io.read_title_file(self.title_file,self.ids_to_titles)
@@ -95,9 +94,13 @@ class Query:
 if __name__ == "__main__":
     """Main method
     """
-    if len(sys.argv) - 1 == 4 and  sys.argv[1] == '--pagerank': #checking if pagerank is being used for the search
-        query = Query(*sys.argv[2:]) #instantiating the query
-    elif len(sys.argv) - 1 !=4: #if the number of arguments is not 4 (if pagerank is not included)
-        query = Query(*sys.argv[1:]) #Instantiating the query
+    if len(sys.argv) == 5 and sys.argv[1] == '--pagerank': #checking if pagerank is being used for the search
+        print(*sys.argv[2:])
+        query = Query(True, *sys.argv[2:]) #instantiating the query
+        query.repl()
+    elif len(sys.argv) == 4: #if pagerank is not being used
+        print(*sys.argv[1:])
+        query = Query(False, *sys.argv[1:]) #Instantiating the query
+        query.repl()
     else:
         print('Usage:[--pagerank] <titleIndex> <documentIndex> <wordIndex>')

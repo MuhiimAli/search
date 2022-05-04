@@ -70,3 +70,19 @@ Test test_query.xml
 Test testingcase2.xml
     INPUT: merillium
 
+Test parsing.xml
+
+WITH PAGERANK
+    INPUT: i want xml and philosophy 
+    RESULTS:
+    1 cs200
+    2 science
+    3 philosophy
+
+WITHOUT PAGERANK
+    INPUT: i want xml and philosophy 
+    RESULTS:
+    1 cs200
+    2 philosophy
+    3 science
+
