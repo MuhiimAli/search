@@ -117,7 +117,7 @@ def test_pagerank1b_dict():
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.4326427),2: pytest.approx(0.2340239),3: pytest.approx(0.333333333)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
-    #Testing if Small Wiki's pagerank values sum to 1
+#Testing if Small Wiki's pagerank values sum to 1
 def test_smallWiki_dict():
     pagerank2 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki','wordfiles/wordsSmallWiki')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
