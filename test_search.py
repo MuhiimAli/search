@@ -124,48 +124,81 @@ def test_euclidean_distance():
     assert index1.euclidean_distance({1:0},{1:0}) == 0
 
 #TESTING PAGERANK
+
+def test_pagerank1_dict():
+    """testing Pagerank1.xml for the case that there exists both 
+    a page links to a page outside of the corpus and a page links to a page that contains text different from the link text"""
+    pagerank1 = Index('wikis/PageRankExample1.xml', 'titlefiles/pagerank1Titles.txt', 'docfiles/pagerank1Docs.txt', 'wordfiles/pagerank1Words.txt')
+    assert pagerank1.ids_to_pageRank_dict == {1: pytest.approx(0.4326427, 0.001), 2: pytest.approx(0.2340239, 0.001), 3: pytest.approx(0.33333, 0.001)}
+    assert sum(pagerank1.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
 def test_pagerank1b_dict():
-    """testing Pagerank1b.xml for the case that"""
+    """Testing pagerank1b for the case that a page has no link and therefore links to every page other than itself"""
     pagerank = Index('our_wiki_files/PageRankExample1b.xml', 'titlefiles/pagerank1bTitles.txt', 'docfiles/pagerank1bDocs.txt', 'wordfiles/pagerank1bWords.txt')
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.4326427),2: pytest.approx(0.2340239),3: pytest.approx(0.333333333)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 #Testing if Small Wiki's pagerank values sum to 1
 def test_smallWiki_dict():
+    """Testing if small wiki's pagerank values sum to approximately 1"""
     pagerank2 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki.txt','wordfiles/wordsSmallWiki.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 def test_medWiki_dict():
+    """Testing if med wiki's pagerank values sum to approximately 1"""
     pagerank2 = Index('wikis/MedWiki.xml', 'MedWikiTitles.txt', 'MedWikiDocs.txt','MedWikiWords.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 def test_bigWiki_dict():
+    """Testing if big wiki's pagerank values sum to approximately 1"""
     pagerank2 = Index('wikis/BigWiki.xml', 'BigWikiTitles.txt', 'BigWikiDocs.txt','BigWikiWords.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 def test_pagerank2():
+    """testing PageRank2 xml file which includes no special linking cases"""
     pagerank2 = Index('wikis/PageRankExample2.xml', 'titlefiles/pagerank2Titles.txt', 'docfiles/pagerank2Docs.txt', 'wordfiles/pagerank2Words.txt')
     assert sum(pagerank2.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 def test_pagerank3():
+    """Testing pagerank3 example for the case that a page is linked to itself"""
     pagerank3 = Index('wikis/PageRankExample3.xml', 'titlefiles/pagerank3Titles.txt', 'docfiles/pagerank3Docs.txt', 'wordfiles/pagerank3Word.txt')
     assert pagerank3.ids_to_pageRank_dict == {1: 0.05242784862611451, 2: 0.05242784862611451, 3: 0.4475721513738852, 4: 0.44757215137388523}
     assert sum(pagerank3.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 
 def test_pagerank6():
+    """Testing pagegrank 6, another xml file with no special linking cases"""
     pagerank6 = Index('our_wiki_files/PageRankExample6.xml', 'titlefiles/pageRank6Titles.txt', 'docfiles/pageRank6Docs.txt', 'wordfiles/pageRank6Words.txt')
     assert pagerank6.ids_to_pageRank_dict == {1: pytest.approx(0.22726, 0.001), 2: pytest.approx(0.37899, 0.001), 3: pytest.approx(0.29175, 0.001), 4: pytest.approx(0.101996, 0.001)}
     assert sum(pagerank6.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
 
 def test_pagerank5():
+    """Testing pagerank 5 for the case that a page has a link to a page outside of the corpus"""
     pagerank = Index('our_wiki_files/PageRankExample5.xml', 'titlefiles/pagerank5Titles.txt', 'docfiles/pagerank5Docs.txt', 'wordfiles/pagerank5Words.txt')
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.05242, 0.001), 2: pytest.approx(0.4476, 0.001), 3: pytest.approx(0.05243, 0.001), 4: pytest.approx(0.4476, 0.001)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)
 
+def test_testing1():
+    """testingcase1.xml accounts for the case where a page is not linked to anything (thus being linked to every page other than itself)
+    as well as the case where a page is linked to a page outside of the corpus. This page outside of the corpus also contains text different fron its linked 
+    (case of having a pipe in link)"""
+
+    index2 = Index('our_wiki_files/testingcase1.xml', 'titlefiles/titleCase1.txt', 'docfiles/docsCase1.txt', 'wordfiles/wordsCase1.txt')
+    assert index2.ids_to_pageRank_dict == {2: pytest.approx(0.3333, 0.001), 13: pytest.approx(0.3333, 0.001), 100: pytest.approx(0.3333, 0.001)}
+    assert sum(index2.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
+def test_testing2():
+    """testingcase2.xml accounts for the case in which a page is linked to itself, as well as if a page is linked to a page whose link is different from the text it contains
+    (pipe in link)"""
+    
+    index3 = Index('our_wiki_files/testingcase2.xml', 'titlefiles/titleCase2.txt', 'docfiles/docsCase2.txt', 'wordfiles/wordsCase2.txt')
+    assert index3.ids_to_pageRank_dict == {1: pytest.approx(0.5, 0.001), 2: pytest.approx(0.5, 0.001)}
+    assert sum(index3.ids_to_pageRank_dict.values()) == pytest.approx(1)
+
 # QUERY UNIT TESTS
 def test_query1():
+    """Testing if the global dictionaries in query are populated appropriately which would account for the methods in query computing and mapping correctly"""
     query1 = Query(False, 'titlefiles/titlesParsing.txt', 'docfiles/docsParsing.txt', 'wordfiles/wordsParsing.txt')
     assert query1.ids_to_titles == {1: 'philosophy', 2: 'science', 3: 'cs200'}
     assert query1.ids_to_pageranks == {1: pytest.approx(0.214862), 2: pytest.approx(0.3972272), 3: pytest.approx(0.3879107)}

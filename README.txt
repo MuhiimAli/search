@@ -6,8 +6,8 @@ Muhiim Ali, Jennifer Chen
 
 2. User Instructions:
 
-type python3 index.py relativeWikiPath titles.txt docs.txt words.txt
-type python3 query.py (--pagerank) titles.txt docs.txt words.txt
+type into terminal: python3 index.py relativeWikiPath titles.txt docs.txt words.txt
+type into terminal: python3 query.py (--pagerank) titles.txt docs.txt words.txt
 
 When query.py is run, the prompt 'search>' will appear and the user can input any word or phrase into the terminal. Pressing the enter button runs search and 
 produces a result. If the input does not exist in the corpus, or if the input is empty, no results will be returned and the user will
@@ -124,7 +124,7 @@ In the terminal, type: python3 query.py titlefiles/tiebreakerTitles.txt docfiles
     INPUT: manor 
     RESULTS:
     1 tiebreaker third
-    
+
 ----Test empty wiki---- #tests a wiki with no pages
 
 WITH PAGERANK
@@ -348,6 +348,10 @@ In the terminal, type: python3 query.py titlefiles/query1Titles.txt docfiles/que
     RESULTS: exits out of search
 
 -------Test testingcase1.xml-----
+
+"""testingcase1.xml accounts for the case where a page is not linked to anything (thus being linked to every page other than itself)
+as well as the case where a page is linked to a page outside of the corpus. This page outside of the corpus also contains text different fron its linked (case of having a pipe in link)"""
+
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/titleCase1.txt docfiles/docsCase1.txt wordfiles/wordsCase1.txt
 
@@ -389,7 +393,10 @@ In the terminal, type: python3 query.py titlefiles/titleCase1.txt docfiles/docsC
     No search results available. Try a different search!
 
 -------Test testingcase2.xml-----
-    WITH PAGERANK
+"""testingcase2.xml accounts for the case in which a page is linked to itself, as well as if a page is linked to a page whose link is different from the text it contains
+(pipe in link)"""
+
+WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/titleCase2.txt docfiles/docsCase2.txt wordfiles/wordsCase2.txt
 
     INPUT: merillium
