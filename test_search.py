@@ -8,37 +8,42 @@ from query import Query
 def test_parse():
     """tests if the parse method correctly parses through pages by checking if global dictionaries that are populated in the parse method are populated correctly"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
-    assert index1.all_page_ids == {1,2,3}
-    assert index1.word_to_id_to_count == {'author': {3: 1},'categori': {2: 1},'cs200': {3: 1},'determin': {2: 1, 3: 1},'document': {1: 1, 2: 1},'gorgeou': {2: 1}, 'king': {3: 1},'list': {1: 1},'philosophi': {1: 1, 2: 1},'process': {1: 1}, 'relev': {2: 1},'scienc': {1: 1, 2: 1},'term': {1: 1, 2: 1},'xml': {3: 1},"king'": {3: 1},"xml'": {1: 1}}
-    assert index1.id_to_links == {1: {2}, 2: {3}, 3: set()}
+    #parsing.xml is a regular file with text in different cases and different types of linking in each page
+    assert index1.all_page_ids == {1,2,3} #checks if all pages are processed/parsed through
+    assert index1.word_to_id_to_count == {'author': {3: 1},'categori': {2: 1},'cs200': {3: 1},'determin': {2: 1, 3: 1},'document': {1: 1, 2: 1},'gorgeou': {2: 1}, \
+        + 'king': {3: 1},'list': {1: 1},'philosophi': {1: 1, 2: 1},'process': {1: 1}, 'relev': {2: 1},'scienc': {1: 1, 2: 1},'term': {1: 1, 2: 1},'xml': {3: 1},"king'": {3: 1},"xml'": {1: 1}}
+    assert index1.id_to_links == {1: {2}, 2: {3}, 3: set()} #empty set is for pages that do not link to anything
     
     index2 = Index('our_wiki_files/testingcase1.xml', 'titlefiles/titleCase1.txt', 'docfiles/docsCase1.txt', 'wordfiles/wordsCase1.txt')
     assert index2.all_page_ids == {13,2,100}
+    #testingcase1.xml has pages that have repeated words (including the same word but repeated with different cases (uppercase, capitalized, etc))
     assert index2.word_to_id_to_count == {'cat': {13: 7, 100: 1}, 'flower': {2: 1},'garden': {2: 1},'tulip': {2: 3},'word': {100: 1}}
-    assert index2.id_to_links == {13: set(), 2: set(), 100: set()}
+    assert index2.id_to_links == {13: set(), 2: set(), 100: set()} #Tests if the id_to_links dictionary is populated correctly in the parse method
 
     index3 = Index('our_wiki_files/testingcase2.xml', 'titlefiles/titleCase2.txt', 'docfiles/docsCase2.txt', 'wordfiles/wordsCase2.txt')
     assert index3.all_page_ids == {1, 2}
-    assert index3.word_to_id_to_count == {'merillium': {1: 4, 2: 2}, 'cool': {1: 2, 2: 1}, 'made': {1: 1}, 'underwat': {1: 1, 2: 1}, 'miner': {1: 2, 2: 1}, '2000': {1: 1}, 'go': {1: 1}, 'one': {1: 1}, 'coin': {1: 1}, 'aquamarin': {2: 1}, 'granit': {2: 1}}
-    assert index3.id_to_links == {1: set(), 2: set()}
+    #testingcase2.xml has a page that links to the other page, also has numbers like '2000' in the text which is considered a term in the way that index parses 
+    assert index3.word_to_id_to_count == {'merillium': {1: 4, 2: 2}, 'cool': {1: 2, 2: 1}, 'made': {1: 1}, 'underwat': {1: 1, 2: 1}, 'miner': {1: 2, 2: 1}, \
+        + '2000': {1: 1}, 'go': {1: 1}, 'one': {1: 1}, 'coin': {1: 1}, 'aquamarin': {2: 1}, 'granit': {2: 1}}
+    assert index3.id_to_links == {1: set(), 2: set()} #both pages either link to themselves or to a page outside the corpus, therefore both have empty sets representing links
 
 def test_handle_links():
     """Testing if the handle_links method correctly removes the first and last two characters (the brackets)"""
     index1 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki', 'wordfiles/wordsSmallWiki')
-    assert index1.handle_Links('[[APPLES!]]', True) == 'APPLES!'
-    assert index1.handle_Links('[[Marry Me|chicken]]', False) == 'chicken'
-    assert index1.handle_Links('[[Marry Me|chicken]]', True) == 'Marry Me'
-    assert index1.handle_Links('{{APPLES!}}', False) == 'APPLES!'
-    assert index1.handle_Links('{{}}', True) == ''
+    assert index1.handle_Links('[[APPLES!]]', True) == 'APPLES!' #case with uppercase and special characters
+    assert index1.handle_Links('[[Marry Me|chicken]]', False) == 'chicken' #tests if the link's text is extracted
+    assert index1.handle_Links('[[Marry Me|chicken]]', True) == 'Marry Me' #tests if the address of the link is extracted
+    assert index1.handle_Links('{{APPLES!}}', False) == 'APPLES!' #tests different brackets
+    assert index1.handle_Links('{{}}', True) == '' #tests empty string case
     
 
 def test_remove_stop_words_and_stem():
     """Testing if the remove_stop_words_and_stem helper method correctly returns a word if the argument is not a stop word"""
     #only one-word inputs because this function is only called when for-each looping through words
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
-    assert index1.remove_stop_words_and_stem('a') == None
+    assert index1.remove_stop_words_and_stem('a') == None 
     assert index1.remove_stop_words_and_stem('and') == None #words will always be lowercase due to .lower method call earlier in parse methd
-    assert index1.remove_stop_words_and_stem('sci') == 'sci'
+    assert index1.remove_stop_words_and_stem('sci') == 'sci' #tests non stop word
 
 
 def test_ids_to_titles_and_title_to_page_id():
@@ -47,17 +52,18 @@ def test_ids_to_titles_and_title_to_page_id():
     assert index1.ids_to_titles == {1:'philosophy',2:'science',3:'cs200'}
     assert index1.title_to_page_id == {'cs200': 3, 'philosophy': 1, 'science': 2}
 
-
-def test_ids_to_links():
-    """Tests if the id_to_links dictionary is populated correctly in the parse method"""
-    index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
-    assert index1.id_to_links == {1:{2},2:{3},3:set()}
+    index2 = Index('our_wiki_files/testingcase2.xml', 'titlefiles/titleCase2.txt', 'docfiles/docsCase2.txt', 'wordfiles/wordsCase2.txt')
+    assert index2.title_to_page_id == {'merillium is cool': 1, 'underwater minerals': 2}
 
 #testing highest frequency calculations
 def test_id_to_highest_freq():
     """Tests if the compute_most_freq_count_and_n_i() helper method computes highest frequency correctly and populates id_to_highest_freq() dictionary appropriately"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.id_to_highest_freq == {1: 1, 2: 1, 3: 1}
+
+    index2 = Index('our_wiki_files/testingcase2.xml', 'titlefiles/titleCase2.txt', 'docfiles/docsCase2.txt', 'wordfiles/wordsCase2.txt')
+    assert index2.id_to_highest_freq == {1: 4, 2: 2} #accurate because the word 'merillium' appears in the first page 4 times
+
 
 def test_term_to_num_docs():
     """Tests if the compute_most_freq_count_and_n_i() helper method populates term_to_num_of_docs() appropriately"""

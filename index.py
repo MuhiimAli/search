@@ -298,7 +298,7 @@ class Index:
     
 if __name__ == "__main__":
     """Main method"""
-    if len(sys.argv)-1:
+    if len(sys.argv)-1: #checks if the amount of arguments are appropriate
         var = Index(*sys.argv[1:])
     else:
         print('Usage: <XML filepath> <titles filepath> <docs filepath> <words filepath>')

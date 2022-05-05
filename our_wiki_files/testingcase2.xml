@@ -12,3 +12,6 @@
     </page>
 </xml>
        
+       <!--Expected rank: -->
+       <!--Tests if a link whose text is the title of a page in the corpus does not conflict with the link's text which indicates 
+       linking to a page outside of the corpus.-->
