@@ -4,6 +4,6 @@
     <page><title>C</title><id>3</id><text>[[F]]</text></page>
     <page><title>D</title><id>4</id><text>[[B]]</text></page>
 </xml>
-<!--Expected: Rank(A) = 0.22726, Rank(B) = 0.37899, Rank(C) = 0.29175, Rank(D) = 0.101996-->
+<!--Expected: Rank(A) = 0.05242, Rank(B) = 0.4476, Rank(C) = 0.05243, Rank(D) = 0.4476-->
 <!--Tests linking to file outside of the corpus-->
 

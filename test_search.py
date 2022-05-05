@@ -6,6 +6,7 @@ from query import Query
 
 #TESTS PARSE METHOD
 def test_parse():
+    """tests if the parse method correctly parses through pages by checking if global dictionaries that are populated in the parse method are populated correctly"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.all_page_ids == {1,2,3}
     assert index1.word_to_id_to_count == {'author': {3: 1},'categori': {2: 1},'cs200': {3: 1},'determin': {2: 1, 3: 1},'document': {1: 1, 2: 1},'gorgeou': {2: 1}, 'king': {3: 1},'list': {1: 1},'philosophi': {1: 1, 2: 1},'process': {1: 1}, 'relev': {2: 1},'scienc': {1: 1, 2: 1},'term': {1: 1, 2: 1},'xml': {3: 1},"king'": {3: 1},"xml'": {1: 1}}
@@ -22,6 +23,7 @@ def test_parse():
     assert index3.id_to_links == {1: set(), 2: set()}
 
 def test_handle_links():
+    """Testing if the handle_links method correctly removes the first and last two characters (the brackets)"""
     index1 = Index('wikis/SmallWiki.xml', 'titlefiles/titlesSmallWiki', 'docfiles/docsSmallWiki', 'wordfiles/wordsSmallWiki')
     assert index1.handle_Links('[[APPLES!]]', True) == 'APPLES!'
     assert index1.handle_Links('[[Marry Me|chicken]]', False) == 'chicken'
@@ -31,6 +33,7 @@ def test_handle_links():
     
 
 def test_remove_stop_words_and_stem():
+    """Testing if the remove_stop_words_and_stem helper method correctly returns a word if the argument is not a stop word"""
     #only one-word inputs because this function is only called when for-each looping through words
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.remove_stop_words_and_stem('a') == None
@@ -39,25 +42,30 @@ def test_remove_stop_words_and_stem():
 
 
 def test_ids_to_titles_and_title_to_page_id():
+    """Tests if the ids_to_titles and title_to_page_id global dictionaries are populated correctly by populate_title_page_id helper method"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.ids_to_titles == {1:'philosophy',2:'science',3:'cs200'}
     assert index1.title_to_page_id == {'cs200': 3, 'philosophy': 1, 'science': 2}
 
 
 def test_ids_to_links():
+    """Tests if the id_to_links dictionary is populated correctly in the parse method"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.id_to_links == {1:{2},2:{3},3:set()}
 
 #testing highest frequency calculations
 def test_id_to_highest_freq():
+    """Tests if the compute_most_freq_count_and_n_i() helper method computes highest frequency correctly and populates id_to_highest_freq() dictionary appropriately"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.id_to_highest_freq == {1: 1, 2: 1, 3: 1}
 
 def test_term_to_num_docs():
+    """Tests if the compute_most_freq_count_and_n_i() helper method populates term_to_num_of_docs() appropriately"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing')
     assert index1.term_to_num_of_docs == {'philosophi': 2, 'process': 1, "xml'": 1, 'document': 2, 'list': 1, 'term': 2, 'scienc': 2, 'determin': 2, 'relev': 1, 'gorgeou': 1, 'categori': 1, 'cs200': 1, 'xml': 1, "king'": 1, 'author': 1, 'king': 1}
 
 def test_empty_wikis():
+    """Tests if empty wikis are indexed appropriately by checking if the global variables are populated as expected"""
     empty = Index('our_wiki_files/emptywiki.xml', 'emptyTitles', 'docfiles/emptyDocs.txt', 'wordfiles/emptyWords.txt')
     assert empty.all_page_ids == set()
     assert empty.idf_dict == {}
@@ -74,6 +82,7 @@ def test_empty_wikis():
     assert emptier.idf_dict == {'dad': pytest.approx(0.69314718), 'mom': pytest.approx(0.69314718), 'ur': 0.0}
 
 def test_one_page():
+    """Tests if wiki with only one page is indexed appropriately by checking if the global variables are populated as expected"""
     one = Index('our_wiki_files/onepage.xml', 'titlefiles/titleOne.txt', 'docfiles/docsOne.txt', 'wordfiles/wordOne.txt')
     assert one.idf_dict == {'cpax': 0.0, 'lone': 0.0, 'page': 0.0}
     assert one.tf_dict == {'cpax': {1: 0.5}, 'lone': {1: 0.5}, 'page': {1: 1.0}}
@@ -82,18 +91,20 @@ def test_one_page():
 #TEST TERM TO DOC RELEVANCE and relevance calculations
 
 def test_idf_dict():
-    """This tests compute_idf in index.py"""
+    """This tests the compute_idf helper method in index.py and if idf_dict is populated appropriately"""
     index1 = Index('wikis/test_tf_idf.xml', 'titlefiles/tfidfTitles.txt', 'docfiles/tfidfDocs.txt', 'wordfiles/tfidfWords.txt')
     assert index1.idf_dict == {'page': 0, '1': pytest.approx(1.0986, .001), 'dog': pytest.approx(0.40546, .001), 'bit': pytest.approx(0.405465, .001), 'man': pytest.approx(1.098612, .001), '2': pytest.approx(1.098612, .001), 'ate': pytest.approx(1.098612, .001), 'chees': pytest.approx(0.405465, .001), '3': pytest.approx(1.0986122, .001)}
 
 def test_words_to_ids_to_relevance():
-    """Tests compute_relevance in index.py"""
+    """Tests compute_relevance helper method in index.py by testing if the words_to_ids_to_relevance dict is populated appropriately"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing.txt')
-    assert index1.words_to_ids_to_relevance == {'philosophi': {1: 0.4054651081081644, 2: 0.4054651081081644}, 'process': {1: 1.0986122886681098}, "xml'": {1: 1.0986122886681098}, 'document': {1: 0.4054651081081644, 2: 0.4054651081081644}, 'list': {1: 1.0986122886681098}, 'term': {1: 0.4054651081081644, 2: 0.4054651081081644}, 'scienc': {1: 0.4054651081081644, 2: 0.4054651081081644}, 'determin': {2: 0.4054651081081644, 3: 0.4054651081081644}, 'relev': {2: 1.0986122886681098}, 'gorgeou': {2: 1.0986122886681098}, 'categori': {2: 1.0986122886681098}, 'cs200': {3: 1.0986122886681098}, 'xml': {3: 1.0986122886681098}, "king'": {3: 1.0986122886681098}, 'author': {3: 1.0986122886681098}, 'king': {3: 1.0986122886681098}}
+    assert index1.words_to_ids_to_relevance == {'philosophi': {1: pytest.approx(0.405465), 2: pytest.approx(0.405465108)}, 'process': {1: pytest.approx(1.0986123)}, "xml'": {1: pytest.approx(1.09861229)}, 'document': {1: pytest.approx(0.4054651), \
+        + 2: pytest.approx(0.4054651)}, 'list': {1: pytest.approx(1.09861229)}, 'term': {1: pytest.approx(0.40546511), 2: pytest.approx(0.4054651)}, 'scienc': {1: pytest.approx(0.4054651), 2: pytest.approx(0.4054651)}, 'determin': {2: pytest.approx(0.4054651), 3: pytest.approx(0.4054651)}, \
+        + 'relev': {2: pytest.approx(1.09861229)}, 'gorgeou': {2: pytest.approx(1.09861229)}, 'categori': {2: pytest.approx(1.09861229)}, 'cs200': {3: pytest.approx(1.09861229)}, 'xml': {3: pytest.approx(1.09861229)}, "king'": {3: pytest.approx(1.09861229)}, 'author': {3: pytest.approx(1.09861229)}, 'king': {3: pytest.approx(1.09861229)}}
 
 #TEST WEGIHTS
 def test_weights_dict():
-    """tests populate_weights_dict in index.py"""
+    """tests populate_weights_dict helper method in index.py"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing', 'wordfiles/wordsParsing.txt')
     assert index1.weights_dict == {1: {1: pytest.approx(0.049999, .001), 2: pytest.approx(0.9, .001), 3: pytest.approx(0.04999999, .001)}, 2: {1: pytest.approx(0.04999, .001), 2: pytest.approx(0.04999, .001), 3: pytest.approx(0.9)}, 3: {1: pytest.approx(0.475), 2: pytest.approx(0.475), 3: pytest.approx(0.04999, .001)}}
 
@@ -105,6 +116,7 @@ def test_weights_dict():
 
 # testing euclidean distance for pagerank
 def test_euclidean_distance():
+    """Tests if the euclidean distance computation helper method computes the euclidean distance appropriately"""
     index1 = Index('our_wiki_files/parsing.xml', 'titlefiles/titlesParsing', 'docfiles/docsParsing.txt', 'wordfiles/wordsParsing.txt')
     assert index1.euclidean_distance({1: 0.3333,2:0.3333,3:0.33333}, {1:0, 2:0,3:0}) == pytest.approx(0.57731)
     assert index1.euclidean_distance({1: 0.111111,2:0.111111,3:0.111111,4:0.111111,5:0.111111,6:0.111111,7:0.111111,8:0.111111,9:0.111111}, {1:0, 2:0,3:0,4:0,5:0,6:0,7:0,8:0,9:0}) == pytest.approx(0.333333)
@@ -113,6 +125,7 @@ def test_euclidean_distance():
 
 #TESTING PAGERANK
 def test_pagerank1b_dict():
+    """testing Pagerank1b.xml for the case that"""
     pagerank = Index('our_wiki_files/PageRankExample1b.xml', 'titlefiles/pagerank1bTitles.txt', 'docfiles/pagerank1bDocs.txt', 'wordfiles/pagerank1bWords.txt')
     assert pagerank.ids_to_pageRank_dict == {1: pytest.approx(0.4326427),2: pytest.approx(0.2340239),3: pytest.approx(0.333333333)}
     assert sum(pagerank.ids_to_pageRank_dict.values()) == pytest.approx(1)

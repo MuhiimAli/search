@@ -20,5 +20,5 @@
         <text>[[A|F]] [[B]] [[C]]</text>
     </page>
 </xml>
-    <!--Expected Rank: Rank(A) = Rank(B) = Rank(C) = Rank(D) = -->
+    <!--Expected Rank: Rank(A) = 0.22726, Rank(B) = 0.37899, Rank(C) = 0.29175, Rank(D) = 0.101996-->
         <!--Testing link different than text (pipe)-->
