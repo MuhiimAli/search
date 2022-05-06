@@ -63,12 +63,6 @@ Tests were made by creating an insance of Index and texting if the dictionaries 
 
     [QUERY.PY]
 
-Tests not included in test_system:
-
-    Testing FileNotFoundException:
-        When 
-    
-
 6. System Testing:
 ----Test Invalid Number of Arguments in Query----------
 In the terminal, type: python3 query.py docfiles/emptyDocs.txt wordfiles/emptyWords.txt
