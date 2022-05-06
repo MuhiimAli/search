@@ -61,15 +61,34 @@ Tests were made by creating an insance of Index and texting if the dictionaries 
 
     [INDEX.PY]
 
+    Because many of our index methods do not take in parameters, we tested many index methods by testing the dictionaries that the
+    methods populate or use to populate other data structures. By testing if these dictionaries are populated correctly, we are able to 
+    confirm that the methods that populate them are processing appropriately. 
+    
+    For helper methods that do take in parameters, such as handle_links
+    method or the method used to calculate euclidean distance, we used assert tests to see if the method returns matched what we expected they would be. 
+
+    We tested many different xml files to account for as many different cases and edge cases as we could think of. For example, we tested wikis that have only one page,
+    wikis that have no pages, wikis with pages with no text, and wikis with pages that have special link cases, and more. By doing this, we can further
+    affirm that the Indexer can appropriately handle different xml files and produce accurate computations and dictionaries.
+
+    Please refer to unit test comments for more detailed explanations of each test.
+
     [QUERY.PY]
+
+    Simialar to unit testing index, we tested if the global dictionaries in query were populated as expected to check if the query methods 
+    were operating and computing as expected.
 
 6. System Testing:
 ----Test Invalid Number of Arguments in Query----------
+"""System test for if the amount of arguments passed in to start Search were not correct/enough """
 In the terminal, type: python3 query.py docfiles/emptyDocs.txt wordfiles/emptyWords.txt
 Returns: Usage:[--pagerank] <titleIndex> <documentIndex> <wordIndex>
 
 This notifies the user to use the appropriate format and input the correct number and type of arguments.
+
 -------Test FileNotFoundError------
+"""Testing for FileNotFoundError exception if the wiki passed in to index.py or if the file(s) passed into query.py do not exist"""
 
 In the terminal, type: python3 index.py wikis/nonexistantWiki.xml nonexistTitles.txt nonexistDocs.txt nondexistWords.txt
 Returns: FileNotFoundError: [Errno 2] No such file or directory: 'wikis/nonexistantWiki.xml'
@@ -81,6 +100,7 @@ In the terminal, type: python3 query.py --pagerank tfidfTitles nonexistDocs.txt 
 Returns: FileNotFoundError: [Errno 2] No such file or directory: 'nonexistTitles.txt'
 
 -------Test writing files------
+"""Testing if the file writing methods were creating files appropriately and if they could overwrite files that are created with the same relative path as an existing file"""
 
 In the terminal, type: python3 index.py wikis/SmallWiki.xml titlefiles/titlesparsing.txt docfiles/docsParsing.txt wordfiles/wordsparsing.txt
 Side effect: Rewrites the existing text, docs, and word files according to SmallWiki. Originally, the text, docs, and word relative paths correlated
@@ -90,6 +110,11 @@ In terminal, type:  python3 index.py our_wiki_files/parsing.xml titlefiles/title
 Side effect: After running the above index call, this index call 'reverses' the last one by rewriting the appropriate parsing.xml files 
 
 ----Test breaking ties------
+"""Testing an xml file that contains the same word with the same frequency in every page so that the pagerank values.
+As tested in test_system, the pagerank values of each page in tiebreaker.xml is 0.333333. The values are the equal.
+The results should thus be ranked based on the value of the id, which proves to be the case."""
+
+
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/tiebreakerTitles.txt docfiles/tiebreakerDocs.txt wordfiles/tiebreakerWords.txt
 
@@ -127,6 +152,7 @@ In the terminal, type: python3 query.py titlefiles/tiebreakerTitles.txt docfiles
     1 tiebreaker third
 
 ----Test empty wiki---- #tests a wiki with no pages
+"""Tests if an empty wikis without any pages could still be used in search. Should return no results for all searches."""
 
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/emptyTitles.txt docfiles/emptyDocs.txt wordfiles/emptyWords.txt
@@ -177,6 +203,8 @@ In the terminal, type: python3 query.py titlefiles/emptyTitles.txt docfiles/empt
     RESULTS: exits out of search
 
 ---------Test emptier wiki------- #tests wiki with pages and titles but no text
+"""Tests if wikis with pages that have no text returns results for words in the title since that is the only 
+place that terms can be extracted from besides the text. For all other searches, there should be no results."""
 
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/emptierTitles.txt docfiles/emptierDocs.txt wordfiles/emptierWords.txt
@@ -243,11 +271,14 @@ In the terminal, type: python3 query.py titlefiles/emptierTitles.txt docfiles/em
     RESULTS: exits out of search
 
 -----Test test_query.xml-----
+"""Tests a regular wiki with different linking cases in each page and with multiple pages in the wiki that have
+both text and links."""
+
 
    WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/query1Titles.txt docfiles/query1Docs.txt wordfiles/query1Words.txt
 
-    INPUT: horse
+    INPUT: horse 
     RESULTS: 
     1 page h
     2 page a
@@ -265,13 +296,16 @@ In the terminal, type: python3 query.py --pagerank titlefiles/query1Titles.txt d
     5 page d
     6 page e
 
+#!!!Because of the way regex processes words, results from 'horse's' differentiates from 'horse'' or 'horse' query
     INPUT: horse's
     RESULTS:
     1 page f
 
+#test empty query
     INPUT: 
     RESULTS: No search results available. Try a different search!
 
+#test query with no search results
     INPUT: on a farm there are cows
     RESULTS: No search results available. Try a different search!
 
@@ -454,6 +488,7 @@ In the terminal, type: python3 query.py titlefiles/titleCase2.txt docfiles/docsC
     RESULTS: exits out of search
 
 ------Test parsing.xml--------
+"""regular query test, shows difference between pagerank and non pagerank query"""
 
 WITH PAGERANK
     INPUT: i want xml and philosophy 
