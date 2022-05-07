@@ -1,5 +1,7 @@
 Muhiim Ali, Jennifer Chen
 
+***FOR SNC portion please refer to design check***
+
 1.Known Bugs:
     When calculating pagerank/weights for a wiki with just one page, we compute a weight of .15/1 and thus the pagerank value converges to a very
     small number, thus the sum of all pagerank values is not 1. This is shown in a commented-out test method in test_search.
