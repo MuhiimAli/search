@@ -17,4 +17,4 @@
 </xml>
        
        <!--Expecting all links to be empty sets (in our indexer code denoting that the page is linked to everything except itself)-->
-       <!--Expected Rank: -->
+       <!--Expected Rank: Rank(13) = 0.3333, Rank(2) = 0.3333, Rank(100) = 0.3333-->

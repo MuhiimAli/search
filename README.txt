@@ -1,8 +1,8 @@
 Muhiim Ali, Jennifer Chen
 
 1.Known Bugs:
-    Words with apostrophes
-    numbers (2000, 1 etc) counted in the terms
+    When calculating pagerank/weights for a wiki with just one page, we compute a weight of .15/1 and thus the pagerank value converges to a very
+    small number, thus the sum of all pagerank values is not 1. This is shown in a commented-out test method in test_search.
 
 2. User Instructions:
 
@@ -34,6 +34,8 @@ to help later calculations, to help calculate pagerank values, and to eventually
     Using these dictionaries and method calls, pagerank values can be calculated and stored within another dictionary,and the title, docs, and words files can be written for the xml file.
     Indexer thus performs all the tasks it needs to do.
 
+    Please refer to index.py for more specific comments and breakdown of the indexer.
+
 [QUERY]
     File query.py is the querier that parses in arguments for the index files and accounts for if pagerank will be used in the 
     search or not. The querier runs a REPL that takes in and proceses queries (searches). The querier then 
@@ -47,11 +49,7 @@ to help later calculations, to help calculate pagerank values, and to eventually
     If query's rank_pages method finds that there are no words in the query search that would match to results in the wiki, an informative message
     will be printed out that tells the user that there are no search results and that they should try a new search. 
 
-[TESTING]
-
-    Test_search contains the unit tests that were used to check for the functionality of index and query as we coded.
-Tests were made by creating an insance of Index and texting if the dictionaries and methods were outputting properly. 
-
+    Please refer to query.py for more specific comments and breakdown of the querier.
 
 4.Extra/Unimplemented Features: 
 
@@ -379,6 +377,7 @@ In the terminal, type: python3 query.py titlefiles/query1Titles.txt docfiles/que
     5 page c
     6 page e
 
+#testing if :quit exists out of the query
     INPUT: :quit
     RESULTS: exits out of search
 
@@ -390,7 +389,7 @@ as well as the case where a page is linked to a page outside of the corpus. This
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank titlefiles/titleCase1.txt docfiles/docsCase1.txt wordfiles/wordsCase1.txt
 
-    INPUT: cat
+    INPUT: CAT
     RESULTS:
     1 how are you?
     2 cat
@@ -411,7 +410,8 @@ In the terminal, type: python3 query.py --pagerank titlefiles/titleCase1.txt doc
 WITHOUT PAGERANK
 In the terminal, type: python3 query.py titlefiles/titleCase1.txt docfiles/docsCase1.txt wordfiles/wordsCase1.txt
 
-    INPUT: cat
+#testing uppercase query entry
+    INPUT: CAT
     RESULTS:
     1 how are you?
     2 cat   
@@ -423,6 +423,7 @@ In the terminal, type: python3 query.py titlefiles/titleCase1.txt docfiles/docsC
     RESULTS:
     1 cat
 
+#Testing capitalization in query entries
     INPUT: Here
     RESULTS:
     No search results available. Try a different search!
@@ -564,6 +565,9 @@ In the terminal, type: python3 query.py titlefiles/titlesSmallWiki.txt docfiles/
     10 germany
 
 ----Testing MedWiki-----
+"""Testing if our search results align with the given search results for MedWiki. All except "computer science" search gives at least 
+7/20 of the possible expected search results. "computer science" gives 6/20.  """
+
 
 WITH PAGERANK
 In the terminal, type: python3 query.py --pagerank MedWikiTitles.txt MedWikiDocs.txt MedWikiWords.txt

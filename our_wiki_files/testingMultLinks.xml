@@ -20,3 +20,6 @@
         <text>[[C]] [[C]] [[C]] [[C]]</text>
     </page>
 </xml>
+
+<!--Expected rank: Rank(A) = 0.141786846, Rank(B) = 0.202145947, Rank(C) = 0.3680377, Rank(D) = 0.288029492-->
+

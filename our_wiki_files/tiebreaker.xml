@@ -15,6 +15,6 @@
         <text>major minor manor</text>
     </page>
 </xml>
-       
+       <!--Rank(1) = 0.33333, Rank(2) = 0.33333, Rank(3) = 0.33333-->
        <!--If the total relevance (idf * tf) are the same for two or more pages-->
        

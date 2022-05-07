@@ -111,7 +111,7 @@ def test_empty_wikis():
     assert empty.weights_dict == {}
     assert empty.term_to_num_of_docs == {}
 
-    emptier = Index('our_wiki_files/emptierwiki.xml', 'docfiles/emptierDocs.txt', 'docfiles/emptierDocs.txt', 'wordfiles/emptierWords.txt')
+    emptier = Index('our_wiki_files/emptierwiki.xml', 'docfiles/emptierDoemptiercs.txt', 'docfiles/emptierDocs.txt', 'wordfiles/emptierWords.txt')
     #emptier wiki only has two pages with titles and no text. Only text in the titles should be considered in computations and dictionaries
     assert emptier.title_to_page_id == {'ur mom': 1, 'ur dad': 2}
     assert emptier.term_to_num_of_docs == {'dad': 1, 'mom': 1, 'ur': 2} #only title page words accounted for, "ur" appears in both titles
@@ -132,6 +132,11 @@ def test_one_page():
     assert one.word_to_id_to_count == {'cpax': {1: 1}, 'lone': {1: 1}, 'page': {1: 2}}
     assert one.term_to_num_of_docs == {'cpax': 1, 'lone': 1, 'page': 1} #should all be 1 because there's only one page
  
+def test_weird_title():
+    """title of one of the pages is an entire web link"""
+    index = Index('our_wiki_files/testing_weights_2.xml', 'titlefiles/weights2Titles.txt', 'docfiles/weights2Docs.txt', 'wordfiles/Word2.txt')
+    assert index.title_to_page_id == {'https://tinyurl.com/asuperdupersecretdocument': 3,'philosophy': 1, 'science': 2}
+    assert index.ids_to_titles == {1: 'philosophy',2: 'science',3: 'https://tinyurl.com/asuperdupersecretdocument'}
 
 #TEST TERM TO DOC RELEVANCE and relevance calculations
 
@@ -294,6 +299,7 @@ def test_multLinks():
     #this result makes sense because, for example, page 4 has a higher pagerank value than 1 and 2 since it is linked to the least amount of pages, among other factors.
     assert index4.ids_to_pageRank_dict == {1: pytest.approx(0.141786846, .001), 2: pytest.approx(0.202145947, .001), 3: pytest.approx(0.3680377, .001),4: pytest.approx(0.288029492, .001)}
 
+
 # def test_one_page_pagerank():
 #     """Tests if wiki with only one page has expected pagerank value
 #     This test is not running as expected because the sum of all pagerank values should be 1 but 
@@ -313,4 +319,20 @@ def test_query1():
     assert query1.ids_to_titles == {1: 'philosophy', 2: 'science', 3: 'cs200'} #testing titles with capitalization, numbers
     assert query1.ids_to_pageranks == {1: pytest.approx(0.214862), 2: pytest.approx(0.3972272), 3: pytest.approx(0.3879107)}
     assert sum(query1.ids_to_pageranks.values()) == pytest.approx(1)
-    
+
+#if pagerank is implemented
+    query2 = Query(True, 'titlefiles/titlesParsing.txt', 'docfiles/docsParsing.txt', 'wordfiles/wordsParsing.txt')
+    assert query2.ids_to_titles == {1: 'philosophy', 2: 'science', 3: 'cs200'} #testing titles with capitalization, numbers
+    assert query2.ids_to_pageranks == {1: pytest.approx(0.214862), 2: pytest.approx(0.3972272), 3: pytest.approx(0.3879107)}
+    assert sum(query2.ids_to_pageranks.values()) == pytest.approx(1)
+    #testing empty wiki with no pages
+    empty = Query(True, 'emptyTitles', 'docfiles/emptyDocs.txt', 'wordfiles/emptyWords.txt')
+    assert empty.ids_to_titles == {}
+    assert empty.ids_to_pageranks == {}
+#testing file with one page
+    one = Query(True, 'titlefiles/titleOne.txt', 'docfiles/docsOne.txt', 'wordfiles/wordOne.txt')
+    assert one.ids_to_titles == {1: 'page'}
+#testing files with pages but no text
+    emptier = Query(True, 'docfiles/emptierDoemptiercs.txt', 'docfiles/emptierDocs.txt', 'wordfiles/emptierWords.txt')
+    assert emptier.ids_to_titles == {1: 'ur mom', 2: 'ur dad'}
+    assert emptier.ids_to_pageranks == {1: pytest.approx(.5), 2: pytest.approx(.5)}

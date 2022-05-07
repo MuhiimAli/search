@@ -25,4 +25,4 @@
 </xml>
 
 <!--Expected Rank: Rank(A) = 0.22726, Rank(B) = 0.37899, Rank(C) = 0.29175, Rank(D) = 0.101996-->
-   
+   <!--Tests pipe links, text with different kinds of words like all capitalized, apostrophes, etc.-->
